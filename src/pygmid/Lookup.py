@@ -205,7 +205,7 @@ class Lookup:
         # unpack varkeys and xdata
         num, den = varkeys
         xdata = self.__DATA[num]/self.__DATA[den]
-        xdesired = vararg
+        xdesired = np.atleast_1d(vararg)
         
         points = (self.__DATA['L'], self.__DATA['VGS'], self.__DATA['VDS'],\
             self.__DATA['VSB'])
