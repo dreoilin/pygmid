@@ -1,0 +1,8 @@
+*.pyc
+*.log
+*.mat
+/dist
+/venv
+/__pycache__
+/build
+/tests/venv
