@@ -200,6 +200,17 @@ class Lookup:
         return output
 
     def _RatioVRatioLK(self, outkeys, varkeys, vararg, pars):
+        """
+        Lookup for Mode 3
+
+        Args:
+            outkeys: list of keys for desired output e.g ['GM', 'ID'] for 'GM_ID'
+            varkeys: list of keys for ratio input e.g ['GM', 'ID'] for 'GM_ID'
+            pars: dict containing L, VGS, VDS and VSB data
+        Output:
+            output: interpolated data specified by outkeys. Squeezed to remove extra
+                    dimensions
+        """
         # unpack outkeys and ydata
         num, den = outkeys
         ydata =  self.__DATA[num]/self.__DATA[den]
@@ -238,11 +249,11 @@ class Lookup:
                 idx = np.argmax(x[:, i])
                 if (xdesired[j] > m):
                     print(f'Look up warning: {num}_{den} input larger than maximum! Output is NaN')
-                if (num.upper() is 'GM') and (den.upper() is 'ID'):
+                if (num.upper() == 'GM') and (den.upper() == 'ID'):
                     x_right = x[idx:-1, i]
                     y_right = y[idx:-1, i]
                     output[i, j] = interp1d(x_right, y_right, **ipkwargs)(xdesired[j])
-                elif (num.upper() is 'GM') and (den.upper() is 'CGG') or (den.upper() is 'CGG'):
+                elif (num.upper() == 'GM') and (den.upper() == 'CGG') or (den.upper() == 'CGG'):
                     x_left = x[1:idx, i]
                     y_left = y[1:idx, i]
                     output[i, j] = interp1d(x_left, y_left, **ipkwargs)(xdesired[j])
