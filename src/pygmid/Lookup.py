@@ -42,18 +42,6 @@ class Lookup:
         self.__default['ID_W'] = None
         self.__default['VDB'] = None
 
-        #['L', 'VGS', 'VDS', 'VSB', 'METHOD']
-
-        #['L', 'VGB', 'GM_ID', 'ID_W', 'VDS', 'VDB', 'VSB', 'METHOD']
-        #default = {'L': min(self['L']),
-        #       'VGB': None,
-        #       'GM_ID': None,
-        #       'ID_W': None,
-        #       'VDS': max(self['VDS'])/2,
-        #       'VDB': None,
-        #       'VSB': 0,
-        #       'METHOD': 'pchip'}
-
     def __load(self, filename):
         """
         Function to load data from file
@@ -292,6 +280,7 @@ class Lookup:
         Output:
             output: 1-d numpy array
         """
+        kwargs = {k.upper(): v for k, v in kwargs.items()} # convert kwargs to upper
         defaultdict = {k:self.__default.get(k) for k in ['L', 'VDS', 'VDB', 'VGB', 'GM_ID', 'ID_W', 'VSB', 'METHOD']}
         pars = {k:kwargs.get(k, v) for k,v in defaultdict.items()}
 
