@@ -1,7 +1,4 @@
 import copy
-import logging
-import os.path
-import pickle
 
 import numpy as np
 import scipy.io
