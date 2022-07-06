@@ -119,3 +119,5 @@ Sample outputs are given below:
 
 - Cian O'Donnell : cian.odonnell@tyndall.ie
 - Danylo Galach
+
+A special thanks to Prof. Boris Murmann for giving permission to use his work and release this package under the Apache 2.0 License.
