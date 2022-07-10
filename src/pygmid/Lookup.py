@@ -164,7 +164,8 @@ class Lookup:
 
         if len(outkeys) > 1:
             num, den = outkeys
-            ydata =  self.__DATA[num]/self.__DATA[den]
+            with np.errstate(divide='ignore',invalid='ignore'):
+                ydata =  self.__DATA[num]/self.__DATA[den]
         else:
             outkey = outkeys[0]
             ydata = self.__DATA[outkey]
@@ -196,12 +197,14 @@ class Lookup:
             output: interpolated data specified by outkeys. Squeezed to remove extra
                     dimensions
         """
-        # unpack outkeys and ydata
-        num, den = outkeys
-        ydata =  self.__DATA[num]/self.__DATA[den]
-        # unpack varkeys and xdata
-        num, den = varkeys
-        xdata = self.__DATA[num]/self.__DATA[den]
+        with np.errstate(divide='ignore',invalid='ignore'):    
+            # unpack outkeys and ydata
+            num, den = outkeys
+            ydata =  self.__DATA[num]/self.__DATA[den]
+            # unpack varkeys and xdata
+            num, den = varkeys
+            xdata = self.__DATA[num]/self.__DATA[den]
+        
         xdesired = np.atleast_1d(vararg)
         
         points = (self.__DATA['L'], self.__DATA['VGS'], self.__DATA['VDS'],\
