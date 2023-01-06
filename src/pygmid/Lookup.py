@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 import scipy.io
-from scipy.interpolate import interp1d, interpn
+from scipy.interpolate import interpn
 
 from .constants import eps
 from .numerical import interp1
@@ -250,22 +250,16 @@ class Lookup:
                 if (num.upper() == 'GM') and (den.upper() == 'ID'):
                     x_right = x[idx:-1, i]
                     y_right = y[idx:-1, i]
-                    # need to implement pchip interpolation here
-                    #output[i, j] = interp1d(x_right, y_right, **ipkwargs)(xdesired[j])
                     output[i, j] = interp1(x_right, y_right, **ipkwargs)(xdesired[j])
                 elif (num.upper() == 'GM') and (den.upper() == 'CGG') or (den.upper() == 'CGG'):
                     x_left = x[1:idx, i]
                     y_left = y[1:idx, i]
-                    # need to implement pchip interpolation here
-                    #output[i, j] = interp1d(x_right, y_right, **ipkwargs)(xdesired[j])
                     output[i, j] = interp1(x_right, y_right, **ipkwargs)(xdesired[j])
                 else:
                     crossings = len(np.argwhere(np.diff(np.sign(x[:,i]-xdesired[j]+eps))))
                     if crossings > 1:
                         print('Crossing warning')
                         return []
-                # need to implement pchip interpolation here
-                #output[i, j] = interp1d(x_right, y_right, **ipkwargs)(xdesired[j])
                 output[i, j] = interp1(x_right, y_right, **ipkwargs)(xdesired[j])
 
         output = np.squeeze(output)
@@ -360,7 +354,7 @@ class Lookup:
                 if max(np.atleast_1d(ratio_data)) > m:
                     print('look_upVGS: GM_ID input larger than maximum!')
             
-            output[j,:] = interp1d(ratio_range, VGS_range)(ratio_data)
+            output[j,:] = interp1(ratio_range, VGS_range)(ratio_data)
             output = output[:]
         
         return np.squeeze(output)
