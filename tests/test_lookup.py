@@ -87,3 +87,5 @@ plt.ylabel(r"$g_m/g_{DS}$")
 plt.xlabel(r"$g_m/I_D$")
 plt.title(r'$g_m/g_{DS}$ vs. $g_m/I_D$')
 plt.show()
+
+# %%
