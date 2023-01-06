@@ -5,7 +5,7 @@ import scipy.io
 from scipy.interpolate import interp1d, interpn
 
 from .constants import eps
-from .utility import interp1
+from .numerical import interp1
 
 class Lookup:
     def __init__(self, filename="MOS.mat", **kwargs):
@@ -240,7 +240,7 @@ class Lookup:
 
         dim = x.shape
         output = np.zeros((dim[1], len(xdesired)))
-        ipkwargs = {'fill_value' : np.nan, 'bounds_error': False, 'METHOD' : pars['METHOD']}
+        ipkwargs = {'fill_value' : np.nan, 'bounds_error': False, 'kind' : pars['METHOD']}
         for i in range(0, dim[1]):
             for j in range(0, len(xdesired)):
                 m = max(x[:, i])
