@@ -2,27 +2,19 @@ import copy
 
 import numpy as np
 import scipy.io
-from scipy.interpolate import interpn, interp1d, PchipInterpolator
+from scipy.interpolate import interp1d, interpn
 
-eps = np.finfo(float).eps
-
-def interp1(x, y, **ipkwargs):
-    METHOD = ipkwargs.pop('METHOD')
-    methods = {
-        'linear' : interp1d,
-        'pchip'  : PchipInterpolator
-    }
-    
-    return methods[METHOD](x,y, **ipkwargs)
+from .constants import eps
+from .utility import interp1
 
 class Lookup:
-    def __init__(self, filename="MOS.mat"):
-        self.__setup(filename)
+    def __init__(self, filename="MOS.mat", **kwargs):
+        self.__setup(filename, **kwargs)
         self.__modefuncmap = {1 : self._SimpleLK,
                               2 : self._SimpleLK,  
                               3 : self._RatioVRatioLK}
 
-    def __setup(self, filename):
+    def __setup(self, filename, **kwargs):
         """
         Setup the Lookup object
 
@@ -31,22 +23,31 @@ class Lookup:
 
         Args:
             filename
+        Kwargs:
+            Keyword arguments can be used to
+            set default values for the lookup
+            function. METHOD sets the method
+            used for interpolation at the end of lookup
+            mode 3. pchip by default
         """
         data = self.__load(filename)
         if data is not None:
             self.__DATA = data
         else:
             raise Exception(f"Data could not be loaded from {filename}")
-        self.__default = {}
-        self.__default['L'] = min(self.__DATA['L'])
-        self.__default['VGS'] = self.__DATA['VGS']
-        self.__default['VDS'] = max(self.__DATA['VDS'])/2
-        self.__default['VSB'] = 0.0
-        self.__default['METHOD'] = 'pchip'
-        self.__default['VGB'] = None
-        self.__default['GM_ID'] = None
-        self.__default['ID_W'] = None
-        self.__default['VDB'] = None
+
+        kwargs = {k.upper(): v for k, v in kwargs.items()} # convert kwargs to upper
+        self.__default = {
+            'L'     :   kwargs.get('L', min(self.__DATA['L'])),
+            'VGS'   :   kwargs.get('VGS', self.__DATA['VGS']),
+            'VDS'   :   kwargs.get('VDS', max(self.__DATA['VDS'])/2),
+            'VSB'   :   kwargs.get('VSB', 0.0),
+            'METHOD':   kwargs.get('METHOD', 'pchip'),
+            'VGB'   :   kwargs.get('VGB', None),
+            'GM_ID' :   kwargs.get('GM_ID', None),
+            'ID_W'  :   kwargs.get('ID_W', None),
+            'VDB'   :   kwargs.get('VDB', None)
+        }
 
     def __load(self, filename):
         """
