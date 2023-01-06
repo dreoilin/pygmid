@@ -240,16 +240,19 @@ class Lookup:
                 if (num.upper() == 'GM') and (den.upper() == 'ID'):
                     x_right = x[idx:-1, i]
                     y_right = y[idx:-1, i]
+                    # need to implement pchip interpolation here
                     output[i, j] = interp1d(x_right, y_right, **ipkwargs)(xdesired[j])
                 elif (num.upper() == 'GM') and (den.upper() == 'CGG') or (den.upper() == 'CGG'):
                     x_left = x[1:idx, i]
                     y_left = y[1:idx, i]
+                    # need to implement pchip interpolation here
                     output[i, j] = interp1d(x_left, y_left, **ipkwargs)(xdesired[j])
                 else:
                     crossings = len(np.argwhere(np.diff(np.sign(x[:,i]-xdesired[j]+eps))))
                     if crossings > 1:
                         print('Crossing warning')
                         return []
+                # need to implement pchip interpolation here
                 output[i, j] = interp1d(x[:,i], y[:, i], **ipkwargs)(xdesired[j])
         
         output = np.squeeze(output)
