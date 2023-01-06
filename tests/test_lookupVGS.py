@@ -23,3 +23,5 @@ print(f'VGS is: {VGS}')
 #%% Test 6
 VGS = NCH.look_upVGS(ID_W = 1e-4, VDB = 0.6, VGB = 1, L = 0.18)
 print(f'VGS is: {VGS}')
+
+# %%
