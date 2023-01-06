@@ -2,9 +2,18 @@ import copy
 
 import numpy as np
 import scipy.io
-from scipy.interpolate import interpn, interp1d
+from scipy.interpolate import interpn, interp1d, PchipInterpolator
 
 eps = np.finfo(float).eps
+
+def interp1(x, y, **ipkwargs):
+    METHOD = ipkwargs.pop('METHOD')
+    methods = {
+        'linear' : interp1d,
+        'pchip'  : PchipInterpolator
+    }
+    
+    return methods[METHOD](x,y, **ipkwargs)
 
 class Lookup:
     def __init__(self, filename="MOS.mat"):
@@ -230,7 +239,7 @@ class Lookup:
 
         dim = x.shape
         output = np.zeros((dim[1], len(xdesired)))
-        ipkwargs = {'fill_value' : np.nan, 'bounds_error': False}
+        ipkwargs = {'fill_value' : np.nan, 'bounds_error': False, 'METHOD' : pars['METHOD']}
         for i in range(0, dim[1]):
             for j in range(0, len(xdesired)):
                 m = max(x[:, i])
@@ -241,20 +250,23 @@ class Lookup:
                     x_right = x[idx:-1, i]
                     y_right = y[idx:-1, i]
                     # need to implement pchip interpolation here
-                    output[i, j] = interp1d(x_right, y_right, **ipkwargs)(xdesired[j])
+                    #output[i, j] = interp1d(x_right, y_right, **ipkwargs)(xdesired[j])
+                    output[i, j] = interp1(x_right, y_right, **ipkwargs)(xdesired[j])
                 elif (num.upper() == 'GM') and (den.upper() == 'CGG') or (den.upper() == 'CGG'):
                     x_left = x[1:idx, i]
                     y_left = y[1:idx, i]
                     # need to implement pchip interpolation here
-                    output[i, j] = interp1d(x_left, y_left, **ipkwargs)(xdesired[j])
+                    #output[i, j] = interp1d(x_right, y_right, **ipkwargs)(xdesired[j])
+                    output[i, j] = interp1(x_right, y_right, **ipkwargs)(xdesired[j])
                 else:
                     crossings = len(np.argwhere(np.diff(np.sign(x[:,i]-xdesired[j]+eps))))
                     if crossings > 1:
                         print('Crossing warning')
                         return []
                 # need to implement pchip interpolation here
-                output[i, j] = interp1d(x[:,i], y[:, i], **ipkwargs)(xdesired[j])
-        
+                #output[i, j] = interp1d(x_right, y_right, **ipkwargs)(xdesired[j])
+                output[i, j] = interp1(x_right, y_right, **ipkwargs)(xdesired[j])
+
         output = np.squeeze(output)
 
         return output
