@@ -358,4 +358,7 @@ class Lookup:
             output = output[:]
         
         return np.squeeze(output)
+
+        #def XTRACT(self, L, VDS, VSB, rho):
+
         
