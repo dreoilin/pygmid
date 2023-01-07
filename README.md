@@ -111,6 +111,7 @@ Sample outputs are given below:
 ## !TODO
 - ~~look_up MODE 3 (ratio vs ratio)~~
 - ~~look_upVGS and lookupVGS~~
+- ~~pchip interpolation~~
 - SPECTRE techsweep
 - Support for non .mat data structures
 - Improved logging for error generation
