@@ -359,6 +359,42 @@ class Lookup:
         
         return np.squeeze(output)
 
-        #def XTRACT(self, L, VDS, VSB, rho):
+    def XTRACT(self, mode, **kwargs):
+        """
+        EKV param identification algorithm.
+
+        Two modes of operation:
+        1)  L, VSB are scalars. VDS scalar or column vector.
+            rho is an optional scalar
+
+        2)
+        """
+
+        if mode == 1:
+            L   =   kwargs.get('L', min(self.__DATA['L']))
+            VDS =   kwargs.get('VDS', self.__DATA['VDS'])
+            VSB =   kwargs.get('VSB', 0.0)
+            rho =   kwargs.get('rho', 0.6)
+            UDS =   kwargs.get('UDS', np.arange(0.025, 1.2, 0.025))
+
+            UT  =   0.0259 * np.asscalar(self.__DATA['TEMP'])/300
+
+            # find n(UDS)
+            gm_ID = self.look_up('GM_ID', VDS=UDS, VSB=VSB, L=L)
+            M = max(gm_ID)
+            nn = 1/(M*UT)
+
+            # find VT(UDS)
+            q = 1/rho -1
+            i = q**2 + q
+            VP = UT * (2 * (q-1) + np.log(q))
+
+            #gm_IDref = rho * M
+            #VGS = [interp1]
+            #for k in range(len(UDS)):
+            #    VGS[k] = 
+
+        #return None
+
 
         
