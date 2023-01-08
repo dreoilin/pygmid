@@ -21,11 +21,11 @@ def interp1(x, y, **ipkwargs):
             'axis'          :   ipkwargs.get('axis', 0),
             'extrapolate'   :   ipkwargs.get('extrapolate', True)
         }
+        ind = np.argsort(x)
+        x = x[ind]
+        y = np.take(y, ind, axis=-1)
+
         # check for increasing monotonicity
-        if np.all(np.diff(x) > 0):
-            return PchipInterpolator(x, y, **pchipkwargs)
-        else:
-            # x is not monotonicallly increasing. Try reversing order
-            return PchipInterpolator(x[::-1], y[::-1], **pchipkwargs)
+        return PchipInterpolator(x, y, **pchipkwargs)
     else:
         return interp1d(x, y, **ipkwargs)
