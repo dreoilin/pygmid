@@ -27,14 +27,15 @@ def XTRACT(lk, mode, **kwargs):
 
         # find n(UDS)
         gm_ID = lk.look_up('GM_ID', VDS=UDS.T, VSB=VSB, L=L)
-        # max function not operating correctly. Array from look_up is correct
-        M = gm_ID.max(axis=1)
+        # get max value from each column
+        M = np.amax(gm_ID.T, axis=1)
         nn = 1/(M*UT)
-
         # find VT(UDS)
         q = 1/rho -1
         i = q**2 + q
         VP = UT * (2 * (q-1) + np.log(q))
-        import IPython; IPython.embed()
         gm_IDref = rho * M
-        #VGS = [interp1(gm_ID[:,k])]
+        # have to use linear interpolation here. gm_ID is not monotonic
+        VGS = [float(interp1(gm_ID[:,k], lk['VGS'], kind='linear')(gm_IDref[k])) for k in range(len(UDS))]
+        
+        
