@@ -13,3 +13,5 @@ print(f'Return is: {ret}')
 #%% Test 2
 ret = XTRACT(NCH, L = 0.18, VDS = 0.6, VSB = 0.0)
 print(f'Return is: {ret}')
+
+# %%
