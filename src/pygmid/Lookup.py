@@ -148,16 +148,20 @@ class Lookup:
         defaultdict = {k:self.__default.get(k) for k in ['L', 'VGS', 'VDS', 'VSB', 'METHOD']}
         pars = {k:kwargs.get(k, v) for k, v in defaultdict.items()} # extracts parameters from kwargs
         
+        # common kwargs for interpolating functions
+        ipkwargs = {'bounds_error': False,
+                    'fill_value' : None}
+
         try:
             mode = self._modeset(outkeys, varkeys)
         except:
             return []
         # appropriate lookup function is called with modefuncmap dict
-        y = self.__modefuncmap.get(mode) (outkeys, varkeys, vararg, pars)
+        y = self.__modefuncmap.get(mode) (outkeys, varkeys, vararg, pars, **ipkwargs)
         
         return y
 
-    def _SimpleLK(self, outkeys, varkeys, vararg, pars):
+    def _SimpleLK(self, outkeys, varkeys, vararg, pars, **ipkwargs):
         """
         Lookup for Modes 1 and 2
 
@@ -170,12 +174,14 @@ class Lookup:
                     dimensions
         """
         ipkwargs = {'bounds_error': False,
-                    'fill_value' : np.nan}
+                    'fill_value' : None}
 
         if len(outkeys) > 1:
             num, den = outkeys
             with np.errstate(divide='ignore',invalid='ignore'):
                 ydata =  self.__DATA[num]/self.__DATA[den]
+                # nan causing issues with interpn extrapolation
+                ydata[np.isnan(ydata)] = 0.0
         else:
             outkey = outkeys[0]
             ydata = self.__DATA[outkey]
@@ -195,7 +201,7 @@ class Lookup:
 
         return output
 
-    def _RatioVRatioLK(self, outkeys, varkeys, vararg, pars):
+    def _RatioVRatioLK(self, outkeys, varkeys, vararg, pars, **ipkwargs):
         """
         Lookup for Mode 3
 
@@ -211,10 +217,12 @@ class Lookup:
             # unpack outkeys and ydata
             num, den = outkeys
             ydata =  self.__DATA[num]/self.__DATA[den]
+            ydata[np.isnan(ydata)] = 0.0
             # unpack varkeys and xdata
             num, den = varkeys
             xdata = self.__DATA[num]/self.__DATA[den]
-        
+            xdata[np.isnan(xdata)] = 0.0
+
         xdesired = np.atleast_1d(vararg)
         
         points = (self.__DATA['L'], self.__DATA['VGS'], self.__DATA['VDS'],\
@@ -222,12 +230,14 @@ class Lookup:
         xi_mesh = np.array(np.meshgrid(pars['L'], pars['VGS'], pars['VDS'], pars['VSB'], indexing='ij'))
         xi = np.rollaxis(xi_mesh, 0, 5)
         xi = xi.reshape(int(xi_mesh.size/4), 4)
+        #ipnkwargs = {'bounds_error' : False,
+        #            'fill_value'   : None}
 
-        x = interpn(points, xdata, xi).reshape(len(np.atleast_1d(pars['L'])), \
+        x = interpn(points, xdata, xi, **ipkwargs).reshape(len(np.atleast_1d(pars['L'])), \
             len(np.atleast_1d(pars['VGS'])), len(np.atleast_1d(pars['VDS'])),\
                  len(np.atleast_1d(pars['VSB'])))
         
-        y = interpn(points, ydata, xi).reshape(len(np.atleast_1d(pars['L'])), \
+        y = interpn(points, ydata, xi, **ipkwargs).reshape(len(np.atleast_1d(pars['L'])), \
             len(np.atleast_1d(pars['VGS'])), len(np.atleast_1d(pars['VDS'])),\
                  len(np.atleast_1d(pars['VSB'])))
         
@@ -240,7 +250,8 @@ class Lookup:
 
         dim = x.shape
         output = np.zeros((dim[1], len(xdesired)))
-        ipkwargs = {'fill_value' : np.nan, 'bounds_error': False, 'kind' : pars['METHOD']}
+        ipkwargs['kind'] = pars['METHOD']
+        
         for i in range(0, dim[1]):
             for j in range(0, len(xdesired)):
                 m = max(x[:, i])
@@ -358,43 +369,3 @@ class Lookup:
             output = output[:]
         
         return np.squeeze(output)
-
-    def XTRACT(self, mode, **kwargs):
-        """
-        EKV param identification algorithm.
-
-        Two modes of operation:
-        1)  L, VSB are scalars. VDS scalar or column vector.
-            rho is an optional scalar
-
-        2)
-        """
-
-        if mode == 1:
-            L   =   kwargs.get('L', min(self.__DATA['L']))
-            VDS =   kwargs.get('VDS', self.__DATA['VDS'])
-            VSB =   kwargs.get('VSB', 0.0)
-            rho =   kwargs.get('rho', 0.6)
-            UDS =   kwargs.get('UDS', np.arange(0.025, 1.2, 0.025))
-
-            UT  =   0.0259 * np.asscalar(self.__DATA['TEMP'])/300
-
-            # find n(UDS)
-            gm_ID = self.look_up('GM_ID', VDS=UDS, VSB=VSB, L=L)
-            M = max(gm_ID)
-            nn = 1/(M*UT)
-
-            # find VT(UDS)
-            q = 1/rho -1
-            i = q**2 + q
-            VP = UT * (2 * (q-1) + np.log(q))
-
-            #gm_IDref = rho * M
-            #VGS = [interp1]
-            #for k in range(len(UDS)):
-            #    VGS[k] = 
-
-        #return None
-
-
-        

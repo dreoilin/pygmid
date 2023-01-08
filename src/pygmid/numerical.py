@@ -19,7 +19,7 @@ def interp1(x, y, **ipkwargs):
         # need to convert ipkwargs
         pchipkwargs = {
             'axis'          :   ipkwargs.get('axis', 0),
-            'extrapolate'   :   ipkwargs.get('extrapolate', None)
+            'extrapolate'   :   ipkwargs.get('extrapolate', True)
         }
         try:
             return PchipInterpolator(x, y, **pchipkwargs)

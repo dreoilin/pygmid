@@ -89,3 +89,6 @@ plt.title(r'$g_m/g_{DS}$ vs. $g_m/I_D$')
 plt.show()
 
 # %%
+# test for utility function
+gm_ID = NCH.look_up('GM_ID', VDS=np.arange(0.025, 1.2+0.025, 0.025), VSB=0.0, L=0.18)
+print(gm_ID)
