@@ -1,8 +1,5 @@
 import numpy as np
-from scipy.interpolate import interpn, interp1d, PchipInterpolator
-
-def monotonically_increasing(x):
-    return np.all(np.diff(x) > 0)
+from scipy.interpolate import interp1d, PchipInterpolator
 
 def interp1(x, y, **ipkwargs):
     """
@@ -19,10 +16,16 @@ def interp1(x, y, **ipkwargs):
 
     METHOD = ipkwargs.get('kind', 'pchip')
     if METHOD == 'pchip':
-        if not monotonically_increasing(x):
-            # reverse arrays for interpolator
-            return PchipInterpolator(x[::-1], y[::-1])
+        # need to convert ipkwargs
+        pchipkwargs = {
+            'axis'          :   ipkwargs.get('axis', 0),
+            'extrapolate'   :   ipkwargs.get('extrapolate', True)
+        }
+        # check for increasing monotonicity
+        if np.all(np.diff(x) > 0):
+            return PchipInterpolator(x, y, **pchipkwargs)
         else:
-            return PchipInterpolator(x, y)
+            # x is not monotonicallly increasing. Try reversing order
+            return PchipInterpolator(x[::-1], y[::-1], **pchipkwargs)
     else:
         return interp1d(x, y, **ipkwargs)
