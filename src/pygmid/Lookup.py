@@ -173,8 +173,6 @@ class Lookup:
             output: interpolated data specified by outkeys Squeezed to remove extra
                     dimensions
         """
-        ipkwargs = {'bounds_error': False,
-                    'fill_value' : None}
 
         if len(outkeys) > 1:
             num, den = outkeys
