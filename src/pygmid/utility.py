@@ -37,5 +37,5 @@ def XTRACT(lk, mode, **kwargs):
         gm_IDref = rho * M
         # have to use linear interpolation here. gm_ID is not monotonic
         VGS = [float(interp1(gm_ID[:,k], lk['VGS'], kind='pchip')(gm_IDref[k])) for k in range(len(UDS))]
-        
+        import IPython; IPython.embed()
         

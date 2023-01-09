@@ -6,7 +6,7 @@ def interp1(x, y, **ipkwargs):
     Wrapper function for python 1d interpolation
     Combines the functionality of interp1d and PchipInterpolator.
 
-    Checks x for increasing monotonicity. If false, both x and y are reversed
+    Reorders x and y for increasing monotonicity in x
 
     Args:
         x, y
