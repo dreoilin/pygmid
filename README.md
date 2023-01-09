@@ -86,6 +86,10 @@ plt.plot(VDSs, np.transpose(ID))
 ~~Currently only lookup modes 1 and 2 are implemented.~~
 Modes 1 (Simple parameter lookup), mode 2 (arbitrary ratio lookup) and mode 3 (cross lookup of ratios) are implemented. The companion lookupVGS function is also included.
 
+### Technology Extraction Functions
+
+Coming soon
+
 ### Examples
 
 Usage of lookup scripts are given in `test_lookup.py` and `test_lookupVGS.py`.
@@ -120,5 +124,9 @@ Sample outputs are given below:
 
 - Cian O'Donnell : cian.odonnell@tyndall.ie
 - Danylo Galach
+
+## Contributors
+
+- José Rui Custódio
 
 A special thanks to Prof. Boris Murmann for giving permission to use his work and release this package under the Apache 2.0 License.
