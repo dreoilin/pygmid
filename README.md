@@ -6,7 +6,7 @@
   <h3 align="center">pygmid</h3>
 
   <p align="center">
-    A python implementation of the gm/ID starter kit
+    A python3 implementation of the gm/ID starter kit
     <br>
     <a href="https://www.github.com/madrasalach/pygmid/issues/new?template=bug.md">Report bug</a>
     ·
@@ -25,11 +25,10 @@
 ## About
 
 pygmid is a Python 3 port of the gm/ID starter kit by Prof. Boris Murmann 
-of Stanford University. 
+of Stanford University. The package also offers some scripts from the Paul Jesper's book.
 
 For the gm/ID starter kit, written for MATLAB, please refer to the 'Links'
 section at Prof. Murmann's website: https://web.stanford.edu/~murmann.
-For the Python 2 version of this port, please see https://github.com/ashwith/pyMOSChar.
 
 ## Installation
 
@@ -88,7 +87,17 @@ Modes 1 (Simple parameter lookup), mode 2 (arbitrary ratio lookup) and mode 3 (c
 
 ### Technology Extraction Functions
 
-Coming soon
+The EKV extraction function can be used as follows:
+
+```python
+from pygmid import EKV_param_extraction, XTRACT
+
+(VDS, n, VT, JS, d1n, d1VT, d1logJS, d2n, d2VT, d2logJS)\
+        = EKV_param_extraction(NCH, 1, L = 0.18, VDS = 0.6, VSB = 0.0)
+
+```
+
+Sample usage of this and other utility functions can be found in `test_utility.py` .
 
 ### Examples
 
