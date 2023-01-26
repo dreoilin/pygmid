@@ -39,52 +39,45 @@ def XTRACT(lk, mode, **kwargs):
         VGS = [float(interp1(gm_ID[:,k], lk['VGS'], kind='pchip')(gm_IDref[k])) for k in range(len(UDS))]
         
         Vth = VGS - nn*VP
-        import IPython; IPython.embed()
         #find JS(UDS) ===============
-        #Js = diag(lookup(dev,'ID_W','GM_ID',gmIDref,'VDS',UDS,'VSB',VSB,'L',L))/i; 
-
+        Js = lk.lookup('ID_W',GM_ID=gm_IDref, VDS=UDS, VSB=VSB, L=L).diagonal()/i 
+        import IPython; IPython.embed()
         # DERIVATIVES ===============
-        #UDS1 = .5*(UDS(1:end-1) + UDS(2:end));
-        #UDS2 = .5*(UDS1(1:end-1) + UDS1(2:end));
+        UDS1 = .5*(UDS[:-1] + UDS[1:])
+        UDS2 = .5*(UDS1[:-1] + UDS1[1:])
+        
+        diffUDS = np.diff(UDS)
+        diffUDS1 = np.diff(UDS1)
 
-        #diffUDS = diff(UDS);
-        #diffUDS1 = diff(UDS1);
+        # subthreshold slope ============
+        diff1n = np.diff(nn)/diffUDS
+        diff2n = np.diff(diff1n)/diffUDS1
 
-        #% subthreshold slope ============
-        #diff1n = diff(nn)./diffUDS;
-        #diff2n = diff(diff1n)./diffUDS1;
+        # threshold voltage =============
+        diff1Vth = np.diff(Vth)/diffUDS
+        diff2Vth = np.diff(diff1Vth)/diffUDS1
 
-        #% threshold voltage =============
-        #diff1Vth = diff(Vth)./diffUDS;
-        #diff2Vth = diff(diff1Vth)./diffUDS1;
+        # log specific current ============
+        diff1logJs = np.diff(np.log(Js))/diffUDS
+        diff2logJs = np.diff(diff1logJs)/diffUDS1
 
-        #% log specific current ============
-        #diff1logJs = diff(log(Js))./diffUDS;
-        #diff2logJs = diff(diff1logJs)./diffUDS1;
+        # n(VDS), VT(VDS) , JS(VDS) ===========
+        #n  = interp1(UDS,nn,VDS,'pchip') 
+        #VT = interp1(UDS,Vth,VDS,'pchip')
+        #JS = interp1(UDS,Js,VDS,'pchip')
 
+        #d1n = interp1(UDS1,diff1n,VDS,'pchip')
+        #d2n = interp1(UDS2,diff2n,VDS,'pchip')
 
+        #d1VT = interp1(UDS1,diff1Vth,VDS,'pchip')
+        #d2VT = interp1(UDS2,diff2Vth,VDS,'pchip')
 
+        #d1logJS = interp1(UDS1,diff1logJs,VDS,'pchip')
+        #d2logJS = interp1(UDS2,diff2logJs,VDS,'pchip')
 
-        #% n(VDS), VT(VDS) , JS(VDS) ===========
-        #n  = interp1(UDS,nn,VDS,'pchip'); 
-        #VT = interp1(UDS,Vth,VDS,'pchip');
-        #JS = interp1(UDS,Js,VDS,'pchip');
+        # OUTPUT ========
+        return (VDS, n, VT, JS, d1n, d1VT, d1logJS, d2n, d2VT, d2logJS) 
 
-        #d1n = interp1(UDS1,diff1n,VDS,'pchip');
-        #d2n = interp1(UDS2,diff2n,VDS,'pchip');
-
-        #d1VT = interp1(UDS1,diff1Vth,VDS,'pchip');
-        #d2VT = interp1(UDS2,diff2Vth,VDS,'pchip');
-
-        #d1logJS = interp1(UDS1,diff1logJs,VDS,'pchip');
-        #d2logJS = interp1(UDS2,diff2logJs,VDS,'pchip');
-
-        #% OUTPUT ========
-        #y = [VDS n VT JS d1n d1VT d1logJS d2n d2VT d2logJS]; 
-
-
-
-        #return
         #% FIGURE =============
         #figure(1); plot(UDS,nn,VDS,n,'*'); grid
         #figure(2); plot(UDS1,diff1VT,VDS,d1VT,'*'); grid
