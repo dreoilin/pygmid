@@ -1,6 +1,16 @@
 import numpy as np
 from scipy.interpolate import interp1d, PchipInterpolator
 
+def monotonic_interp1(x, y, **ipkwargs):
+    # check for maximum monotonic subarray here
+    # ...
+    # placeholder
+    xsub = x
+    ysub = y
+    # ...
+
+    return interp1(xsub, ysub, **ipkwargs)
+
 def interp1(x, y, **ipkwargs):
     """
     Wrapper function for python 1d interpolation
@@ -21,11 +31,11 @@ def interp1(x, y, **ipkwargs):
             'axis'          :   ipkwargs.get('axis', 0),
             'extrapolate'   :   ipkwargs.get('extrapolate', True)
         }
+        # enforce increasing monotonicity
         ind = np.argsort(x)
         x = x[ind]
         y = np.take(y, ind, axis=-1)
 
-        # check for increasing monotonicity
         return PchipInterpolator(x, y, **pchipkwargs)
     else:
         return interp1d(x, y, **ipkwargs)
