@@ -1,6 +1,7 @@
 *.pyc
 *.log
-*.mat
+180nch.mat
+180pch.mat
 dist
 __pycache__
 /build
@@ -10,3 +11,5 @@ src/**/*.png
 .venv
 venv
 pygmid.egg-info
+.pytest_cache
+.vscode
