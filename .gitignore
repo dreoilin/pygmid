@@ -1,9 +1,12 @@
 *.pyc
 *.log
 *.mat
-/dist
-/venv
-/__pycache__
+dist
+__pycache__
 /build
 /tests/venv
 /MATLAB
+src/**/*.png
+.venv
+venv
+pygmid.egg-info
