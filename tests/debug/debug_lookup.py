@@ -25,6 +25,7 @@ plt.xlabel(r"$V_{DS}$ [V]")
 plt.title(r'$I_D$ vs. $V_{DS}$ for varying $V_{GS}$')
 plt.legend(VGSs)
 plt.show()
+# TODO: use something like https://github.com/matplotlib/pytest-mpl to compare the plots
 
 # %%
 # plot Vt against L
