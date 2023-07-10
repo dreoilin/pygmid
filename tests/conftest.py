@@ -1,4 +1,5 @@
 import pytest
+import scipy
 from pygmid import Lookup
 
 
