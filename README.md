@@ -1,3 +1,5 @@
+![PyPI - Downloads](https://img.shields.io/pypi/dm/pygmid)
+
 <p align="center">
   <a>
     <img src="https://github.com/madrasalach/pygmid/blob/main/docs/img/icon.png?raw=true" width="80">
