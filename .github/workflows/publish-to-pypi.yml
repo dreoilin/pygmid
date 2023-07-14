@@ -1,7 +1,7 @@
 name: Publish Python distributions to TestPyPi and PyPi
-on: push
-  # release:
-  #   types: [published]
+on: 
+  release:
+    types: [published]
 
 jobs:
   # test:
