@@ -13,6 +13,7 @@ import pickle
 import os
 import glob
 import re
+import json
 
 def matrange(start, step, stop):
     num = round((stop - start) / step + 1)
@@ -26,7 +27,13 @@ class Config:
         self.__config.read(configfile)
         self.__cfgDict = {s:dict(self.__config.items(s)) for s in self.__config.sections()}
         self.__parse_ranges()
-        self.__generate_netlist()		
+        self.__generate_netlist()
+
+        try:
+            self.__cfgDict['mn'] = json.loads(self.__cfgDict['MODEL']['MN'])
+        except json.decoder.JSONDecodeError:
+            raise "Error parsing config: make sure MN has no weird characters in it, and that the list isn't terminated with a trailing ','"
+        
         
         n = []
         p = []
@@ -171,14 +178,15 @@ class Spectre:
         self.__args = args
     
     def run(self, filename):
-        infile = filename
-        try:
-            cmd_args = ['spectre', filename] + [*self.__args]
-            cp = subprocess.run(cmd_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        except CalledProcessError as e:
-            logging.info(f"Error executing process\n\n{e}")
-            return
-        logging.info(cp.stdout)
+        return
+        # infile = filename
+        # try:
+        #     cmd_args = ['spectre', filename] + [*self.__args]
+        #     cp = subprocess.run(cmd_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # except CalledProcessError as e:
+        #     logging.info(f"Error executing process\n\n{e}")
+        #     return
+        # logging.info(cp.stdout)
 
 class Sweep:
     def __init__(self, configfile: str):
@@ -305,12 +313,7 @@ class Sweep:
 
         return (nmos, pmos)
 
-configfile = str(sys.argv[1])
-swp = Sweep(configfile)
-swp.run()
-
-
-
-
-
-    
+if __name__ == '__main__':
+    configfile = str(sys.argv[1])
+    swp = Sweep(configfile)
+    swp.run()
