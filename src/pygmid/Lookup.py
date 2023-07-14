@@ -3,6 +3,7 @@ import copy
 import numpy as np
 import scipy.io
 from scipy.interpolate import interpn
+import pickle
 
 from .constants import eps
 from .numerical import interp1
@@ -74,6 +75,12 @@ class Lookup:
                     mat = mat[k]
                     data = {k.upper():copy.deepcopy(np.squeeze(mat[k][0][0])) for k in mat.dtype.names}
                     return data   
+        
+        elif filename.endswith('.pkl'):
+            with open(filename, 'rb') as f:
+                data = pickle.load(f)
+                return data
+
         # !TODO add functionality to load other data structures
         return None
 
