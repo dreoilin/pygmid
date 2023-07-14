@@ -1,4 +1,3 @@
-![Publish to PyPI status](https://github.com/madrasalach/pygmid/actions/workflows/publish-to-pypi.yml/badge.svg?branch=main)
 ![Tests](https://github.com/madrasalach/pygmid/actions/workflows/run-tests.yml/badge.svg?branch=main)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/pygmid)
 
