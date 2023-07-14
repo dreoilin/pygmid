@@ -1,5 +1,7 @@
 name: All tests
-on: push
+on:
+  push:
+  workflow_call:
 
 jobs:
   test-setup:
