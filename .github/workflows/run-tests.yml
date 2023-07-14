@@ -3,7 +3,7 @@ on: push
 
 jobs:
   test-setup:
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/cache@v3
       id: cache
@@ -14,7 +14,7 @@ jobs:
       tests_already_run: ${{ steps.cache.outputs.cache-hit == true }}
   test:
     needs: test-setup
-    if: needs.test-setup,outputs.test_already_run != true
+    if: needs.test-setup.outputs.test_already_run != true
     name: Unit tests
     runs-on: ubuntu-latest
     steps:
