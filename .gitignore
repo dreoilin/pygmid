@@ -1,7 +1,5 @@
 *.pyc
 *.log
-180nch.mat
-180pch.mat
 dist
 __pycache__
 build
