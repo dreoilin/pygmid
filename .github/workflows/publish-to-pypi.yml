@@ -1,22 +1,14 @@
-name: Publish Python distributions to TestPyPi and PyPi
+name: Publish to PyPi
 on: 
   release:
     types: [published]
 
 jobs:
-  # test:
-  #   name: Run tests
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #   - uses: actions/setup-python@v4
-  #     with:
-  #       python-version: "3.x"
-  #   - run: pip install pytest .
-  #   - run: python3 -m pytest tests/
+  test:
+    uses: madrasalach/pygmid/.github/workflows/run-tests.yml@main
   build:
     name: Build and upload python distributions
-    # needs: test
+    needs: test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
