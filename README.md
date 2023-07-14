@@ -19,7 +19,6 @@
 - [About](#about)
 - [Installation](#installation)
 - [Usage](#usage)
-- [TODO](#todo)
 - [Authors](#authors)
 
 ## About
@@ -120,14 +119,6 @@ Sample outputs are given below:
 ### Command Line Interface (CLI)
 
 `pygmid` also features a CLI which can be used to run techweeps to generate transistor data
-
-## !TODO
-- ~~look_up MODE 3 (ratio vs ratio)~~
-- ~~look_upVGS and lookupVGS~~
-- ~~pchip interpolation~~
-- SPECTRE techsweep
-- Support for non .mat data structures
-- Improved logging for error generation
 
 ## Authors
 
