@@ -35,7 +35,7 @@ class Lookup:
         if data is not None:
             self.__DATA = data
         else:
-            raise Exception(f"Data could not be loaded from {filename}")
+            raise RuntimeError(f"Data could not be loaded from {filename}")
 
         kwargs = {k.upper(): v for k, v in kwargs.items()} # convert kwargs to upper
         self.__default = {
@@ -84,13 +84,16 @@ class Lookup:
         # !TODO add functionality to load other data structures
         return None
 
+    def __contains__(self, key):
+        return key in self.__DATA.keys()
+
     def __getitem__(self, key):
         """
         __getitem__ dunder method overwritten to allow convenient
         pseudo array access to member data. Returns a copy of the
         member array.
         """
-        if key not in self.__DATA.keys():
+        if key not in self:
             raise ValueError(f"Lookup table does not contain this data")
 
         return np.copy(self.__DATA[key])
@@ -118,7 +121,7 @@ class Lookup:
         elif (not out_ratio) and (not var_ratio):
             mode = 1
         else:
-            raise Exception("Invalid syntax or usage mode! Please check documentation.")
+            raise ValueError("Invalid syntax or usage mode! Please check documentation.")
         
         return mode
 

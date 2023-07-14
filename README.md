@@ -1,9 +1,10 @@
 ![Publish to PyPI status](https://github.com/madrasalach/pygmid/actions/workflows/publish-to-pypi.yml/badge.svg?branch=main)
 ![Tests](https://github.com/madrasalach/pygmid/actions/workflows/run-tests.yml/badge.svg?branch=main)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/pygmid)
 
 <p align="center">
   <a>
-    <img src="docs/img/icon.png" width="80">
+    <img src="https://github.com/madrasalach/pygmid/blob/main/docs/img/icon.png?raw=true" width="80">
   </a>
 
   <h3 align="center">pygmid</h3>
@@ -107,17 +108,17 @@ Usage of lookup scripts are given in `test_lookup.py` and `test_lookupVGS.py`.
 
 Sample outputs are given below:
 
-![image](docs/img/IDvVDS.png)
+![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/IDvVDS.png?raw=true)
 
-![image](docs/img/vtvsL.png)
+![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/vtvsL.png?raw=true)
 
-![image](docs/img/gm_gds.png)
+![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/gm_gds.png?raw=true)
 
-![image](docs/img/ft.png)
+![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/ft.png?raw=true)
 
-![image](docs/img/idwVDS.png)
+![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/idwVDS.png?raw=true)
 
-![image](docs/img/IDWvsgmID.png)
+![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/IDWvsgmID.png?raw=true)
 
 ### Command Line Interface (CLI)
 
