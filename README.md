@@ -132,6 +132,7 @@ Sample outputs are given below:
 ## Authors
 
 - Cian O'Donnell : cian.odonnell@mcci.ie
+- Tiarnach Ó Riada : tiarnach.oriada@tyndall.ie
 - Danylo Galach
 
 ## Contributors
