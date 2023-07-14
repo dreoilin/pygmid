@@ -10,3 +10,5 @@ venv
 pygmid.egg-info
 .pytest_cache
 .vscode
+sweep.*
+*.pkl
