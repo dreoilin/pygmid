@@ -5,6 +5,7 @@ jobs:
   test-setup:
     runs-on: ubuntu-latest
     steps:
+    - run: ls -lA
     - uses: actions/cache@v3
       id: cache
       with:
