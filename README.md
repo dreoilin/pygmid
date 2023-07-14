@@ -1,3 +1,6 @@
+![Publish to PyPI status](https://github.com/madrasalach/pygmid/actions/workflows/publish-to-pypi.yml/badge.svg?branch=main)
+![Tests](https://github.com/madrasalach/pygmid/actions/workflows/run-tests.yml/badge.svg?branch=main)
+
 <p align="center">
   <a>
     <img src="docs/img/icon.png" width="80">
