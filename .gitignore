@@ -7,3 +7,5 @@
 /build
 /tests/venv
 /MATLAB
+.venv
+.vscode

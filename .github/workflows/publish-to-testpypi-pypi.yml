@@ -1,0 +1,35 @@
+name: Publish Python distributions to TestPyPi and PyPi
+on: push
+
+jobs:
+  build-n-upload:
+    name: Publish Python distributions to TestPyPi and PyPi
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+    - name: Install pypa/build
+      run: >-
+        python3 -m
+        pip install
+        build
+        --user
+    - name: Build both binary wheel and source tarball
+      run: >-
+        python3 -m
+        build
+        --sdist
+        --wheel
+        --outdir dist/
+    - name: Upload distribution
+      uses: actions/upload-artifact@v3
+      with:
+        name: pygmid-dist
+        path: dist/
+    # - name: Publish distribution to TestPyPi
+    #   uses: pypa/gh-action-pypi-publish@release/v1
+    #   with:
+    #     password: 
