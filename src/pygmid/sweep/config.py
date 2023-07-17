@@ -1,22 +1,25 @@
+import numpy as np
+import json
+import ast
+import configparser
+
+def matrange(start, step, stop):
+    num = round((stop - start) / step + 1)
+    
+    return np.linspace(start, stop, num)
 
 class Config:
-    def __init__(self, configfile):
-        self.__config = configparser.ConfigParser()
-        self.__config.optionxform = lambda option: option.upper()		
-        self.__config.read(configfile)
-        self.__cfgDict = {s:dict(self.__config.items(s)) for s in self.__config.sections()}
-        self.__parse_ranges()
-        self.__generate_netlist()
-
-        try:
-            self.__cfgDict['mn'] = json.loads(self.__cfgDict['MODEL']['MN'])
-        except json.decoder.JSONDecodeError:
-            raise "Error parsing config: make sure MN has no weird characters in it, and that the list isn't terminated with a trailing ','"
-        
+    def __init__(self, config_file_path: str):
+        self._configParser = configparser.ConfigParser()
+        self._configParser.optionxform = lambda option: option.upper()		
+        self._configParser.read(config_file_path)
+        self._config = {s:dict(self._configParser.items(s)) for s in self._configParser.sections()}
+        self._parse_ranges()
+        self._generate_netlist()        
         
         n = []
         p = []
-        self.__cfgDict['outvars'] = 	['ID','VT','IGD','IGS','GM','GMB','GDS','CGG','CGS','CSG','CGD','CDG','CGB','CDD','CSS']
+        self._config['outvars'] = 	['ID','VT','IGD','IGS','GM','GMB','GDS','CGG','CGS','CSG','CGD','CDG','CGB','CDD','CSS']
         n.append( ['mn:ids','A',   	[1,    0,   0,    0,    0,   0,    0,    0,    0,    0,    0,    0,    0,    0,    0  ]])
         n.append( ['mn:vth','V',   	[0,    1,   0,    0,    0,   0,    0,    0,    0,    0,    0,    0,    0,    0,    0  ]])
         n.append( ['mn:igd','A',   	[0,    0,   1,    0,    0,   0,    0,    0,    0,    0,    0,    0,    0,    0,    0  ]])
@@ -34,7 +37,7 @@ class Config:
         n.append( ['mn:csg','F',   	[0,    0,   0,    0,    0,   0,    0,    0,    0,   -1,    0,    0,    0,    0,    0  ]])
         n.append( ['mn:cjd','F',   	[0,    0,   0,    0,    0,   0,    0,    0,    0,    0,    0,    0,    0,    1,    0  ]])
         n.append( ['mn:cjs','F',   	[0,    0,   0,    0,    0,   0,    0,    0,    0,    0,    0,    0,    0,    0,    1  ]])
-        self.__cfgDict['n'] = n		
+        self._config['n'] = n		
 
         p.append( ['mp:ids','A',   	[1,    0,   0,    0,    0,   0,    0,    0,    0,    0,    0,    0,    0,    0,    0  ]])
         p.append( ['mp:vth','V',   	[0,    1,   0,    0,    0,   0,    0,    0,    0,    0,    0,    0,    0,    0,    0  ]])
@@ -53,63 +56,71 @@ class Config:
         p.append( ['mp:csg','F',   	[0,    0,   0,    0,    0,   0,    0,    0,    0,   -1,    0,    0,    0,    0,    0  ]])
         p.append( ['mp:cjd','F',   	[0,    0,   0,    0,    0,   0,    0,    0,    0,    0,    0,    0,    0,    1,    0  ]])
         p.append( ['mp:cjs','F',   	[0,    0,   0,    0,    0,   0,    0,    0,    0,    0,    0,    0,    0,    0,    1  ]])
-        self.__cfgDict['p'] = p	
+        self._config['p'] = p	
         
-        self.__cfgDict['outvars_noise'] = ['STH','SFL']
+        self._config['outvars_noise'] = ['STH','SFL']
         n_noise = []
         p_noise = []
         n_noise.append(['mn:id', ''])
         n_noise.append(['mn:fn', ''])
-        self.__cfgDict['n_noise'] = n_noise
+        self._config['n_noise'] = n_noise
         
         p_noise.append(['mp:id', ''])
         p_noise.append(['mp:fn', ''])
-        self.__cfgDict['p_noise'] = p_noise
+        self._config['p_noise'] = p_noise
 
     def __getitem__(self, key):
-        if key not in self.__cfgDict.keys():
+        if key not in self._config.keys():
             raise ValueError(f"Lookup table does not contain this data")
     
-        return self.__cfgDict[key]
+        return self._config[key]
         
-    def __parse_ranges(self):
+    def _parse_ranges(self):
         # parse numerical ranges		
         for k in ['VGS', 'VDS', 'VSB', 'LENGTH']:
-            v = ast.literal_eval(self.__cfgDict['SWEEP'][k])
+            v = ast.literal_eval(self._config['SWEEP'][k])
             v = [v] if type(v) is not list else v
             v = [matrange(*r) for r in v]
             v = [val for r in v for val in r] 
-            self.__cfgDict['SWEEP'][k] = v
+            self._config['SWEEP'][k] = v
     
         for k in ['WIDTH', 'NFING']:
-            self.__cfgDict['SWEEP'][k] = int(self.__cfgDict['SWEEP'][k])
+            self._config['SWEEP'][k] = int(self._config['SWEEP'][k])
     
     def generate_m_dict(self):
         return {
-            'INFO' : self.__cfgDict['MODEL']['INFO'],
-            'CORNER' : self.__cfgDict['MODEL']['CORNER'],
-            'TEMP' : self.__cfgDict['MODEL']['TEMP'],
-            'NFING' : self.__cfgDict['SWEEP']['NFING'],
-            'L' : np.array(self.__cfgDict['SWEEP']['LENGTH']).T,
-            'W' : self.__cfgDict['SWEEP']['WIDTH'],
-            'VGS' : np.array(self.__cfgDict['SWEEP']['VGS']).T,
-            'VDS' : np.array(self.__cfgDict['SWEEP']['VDS']).T,
-            'VSB' : np.array(self.__cfgDict['SWEEP']['VSB']).T 
+            'INFO' : self._config['MODEL']['INFO'],
+            'CORNER' : self._config['MODEL']['CORNER'],
+            'TEMP' : self._config['MODEL']['TEMP'],
+            'NFING' : self._config['SWEEP']['NFING'],
+            'L' : np.array(self._config['SWEEP']['LENGTH']).T,
+            'W' : self._config['SWEEP']['WIDTH'],
+            'VGS' : np.array(self._config['SWEEP']['VGS']).T,
+            'VDS' : np.array(self._config['SWEEP']['VDS']).T,
+            'VSB' : np.array(self._config['SWEEP']['VSB']).T 
         }
         
-    def __generate_netlist(self):
-        modelfile = self.__cfgDict['MODEL']['FILE']
-        paramfile = self.__cfgDict['MODEL']['PARAMFILE']
-        width = self.__cfgDict['SWEEP']['WIDTH']
-        modelp = self.__cfgDict['MODEL']['MODELP']
-        modeln = self.__cfgDict['MODEL']['MODELN']
-        temp =int(self.__cfgDict['MODEL']['TEMP'])-273
-        VDS_max = max(self.__cfgDict['SWEEP']['VDS'])
-        VDS_step = self.__cfgDict['SWEEP']['VDS'][1] - self.__cfgDict['SWEEP']['VDS'][0] 
-        VGS_max = max(self.__cfgDict['SWEEP']['VGS'])
-        VGS_step = self.__cfgDict['SWEEP']['VGS'][1] - self.__cfgDict['SWEEP']['VGS'][0]
+    def _generate_netlist(self):
+        modelfile = self._config['MODEL']['FILE']
+        paramfile = self._config['MODEL']['PARAMFILE']
+        width = self._config['SWEEP']['WIDTH']
+        modelp = self._config['MODEL']['MODELP']
+        modeln = self._config['MODEL']['MODELN']
+        try:
+            mn_supplement = json.loads(self._config['MODEL']['MN'])
+        except json.decoder.JSONDecodeError:
+            raise "Error parsing config: make sure MN has no weird characters in it, and that the list isn't terminated with a trailing ','"
+        try:
+            mp_supplement = json.loads(self._config['MODEL']['MP'])
+        except json.decoder.JSONDecodeError:
+            raise "Error parsing config: make sure MP has no weird characters in it, and that the list isn't terminated with a trailing ','"
+        temp =int(self._config['MODEL']['TEMP'])-273
+        VDS_max = max(self._config['SWEEP']['VDS'])
+        VDS_step = self._config['SWEEP']['VDS'][1] - self._config['SWEEP']['VDS'][0] 
+        VGS_max = max(self._config['SWEEP']['VGS'])
+        VGS_step = self._config['SWEEP']['VGS'][1] - self._config['SWEEP']['VGS'][0]
     
-        NFING = self.__cfgDict['SWEEP']['NFING']
+        NFING = self._config['SWEEP']['NFING']
     
         netlist = (
             f"//pysweep.scs",
@@ -129,17 +140,9 @@ class Config:
             f'vbsp     (vbp 0)         vsource dc=sb',  
             f'\n',	 
             f'\n',	 
-            f'mp (vdp vgp 0 vbp) {modelp} l=L w=Wtot m=1 simM=1\\',
-            f'	ad=(((Wtot) / (1)) < 239.5n) ? ((floor((1) / 2.0) * (((((120n) - 0) + 120n) * 240n) + (((Wtot) / (1)) * 200n))) + ((((1) / 2) - floor((1) / 2) != 0) ? (((100n > (((120n) - 0) + 120n) ? 100n : (((120n) - 0) + 120n)) * 240n) + (((Wtot) / (1)) * 100n)) : 0)) / 1 : ((floor((1) / 2.0) * ((((120n) - 0) + 200n) * ((Wtot) / (1)))) + ((((1) / 2) - floor((1) / 2) != 0) ? ((200n > (((120n) - 0) + 160n) ? 200n : (((120n) - 0) + 160n)) * ((Wtot) / (1))) : 0)) / 1 \\',
-            f'	as=(((Wtot) / (1)) < 239.5n) ? ((((100n > (((120n) - 0) + 120n) ? 100n : (((120n) - 0) + 120n)) * 240n) + (((Wtot) / (1)) * 100n)) + (floor(((1) - 1) / 2.0) * (((((120n) - 0) + 120n) * 240n) + (((Wtot) / (1)) * 200n))) + ((((1) / 2) - floor((1) / 2) == 0) ? (((100n > (((120n) - 0) + 120n) ? 100n : (((120n) - 0) + 120n)) * 240n) + (((Wtot) / (1)) * 100n)) : 0)) / 1 : (((200n > (((120n) - 0) + 160n) ? 200n : (((120n) - 0) + 160n)) * ((Wtot) / (1))) + (floor(((1) - 1) / 2.0) * ((((120n) - 0) + 200n) * ((Wtot) / (1)))) + ((((1) / 2) - floor((1) / 2) == 0) ? ((200n > (((120n) - 0) + 160n) ? 200n : (((120n) - 0) + 160n)) * ((Wtot) / (1))) : 0)) / 1 \\',
-            f'	pd=(((Wtot) / (1)) < 239.5n) ? ((floor((1) / 2.0) * ((2 * (((120n) - 0) + 120n)) + 880n)) + ((((1) / 2) - floor((1) / 2) != 0) ? ((2 * (100n > (((120n) - 0) + 120n) ? 100n : (((120n) - 0) + 120n))) + 680n) : 0)) / 1 : ((floor((1) / 2.0) * ((2 * (((120n) - 0) + 200n)) + (2 * ((Wtot) / (1))))) + ((((1) / 2) - floor((1) / 2) != 0) ? ((2 * (200n > (((120n) - 0) + 160n) ? 200n : (((120n) - 0) + 160n))) + (2 * ((Wtot) / (1)))) : 0)) / 1 \\',
-            f'	ps=(((Wtot) / (1)) < 239.5n) ? (((2 * (100n > (((120n) - 0) + 120n) ? 100n : (((120n) - 0) + 120n))) + 680n) + (floor(((1) - 1) / 2.0) * ((2 * (((120n) - 0) + 120n)) + 880n)) + ((((1) / 2) - floor((1) / 2) == 0) ? ((2 * (100n > (((120n) - 0) + 120n) ? 100n : (((120n) - 0) + 120n))) + 680n) : 0)) / 1 : (((2 * (200n > (((120n) - 0) + 160n) ? 200n : (((120n) - 0) + 160n))) + (2 * ((Wtot) / (1)))) + (floor(((1) - 1) / 2.0) * ((2 * (((120n) - 0) + 200n)) + (2 * ((Wtot) / (1))))) + ((((1) / 2) - floor((1) / 2) == 0) ? ((2 * (200n > (((120n) - 0) + 160n) ? 200n : (((120n) - 0) + 160n))) + (2 * ((Wtot) / (1)))) : 0)) / 1 \\',
+            f'mp (vdp vgp 0 vbp) {modelp} {mp_supplement}',
             f'\n',	 
-            f'mn (vdn vgn 0 vbn) {modeln} l=L w=Wtot m=1 simM=1 \\',
-            f'	ad=(((Wtot) / (1)) < 239.5n) ? ((floor((1) / 2.0) * (((((120n) - 0) + 120n) * 240n) + (((Wtot) / (1)) * 200n))) + ((((1) / 2) - floor((1) / 2) != 0) ? (((100n > (((120n) - 0) + 120n) ? 100n : (((120n) - 0) + 120n)) * 240n) + (((Wtot) / (1)) * 100n)) : 0)) / 1 : ((floor((1) / 2.0) * ((((120n) - 0) + 200n) * ((Wtot) / (1)))) + ((((1) / 2) - floor((1) / 2) != 0) ? ((200n > (((120n) - 0) + 160n) ? 200n : (((120n) - 0) + 160n)) * ((Wtot) / (1))) : 0)) / 1 \\',
-            f'	as=(((Wtot) / (1)) < 239.5n) ? ((((100n > (((120n) - 0) + 120n) ? 100n : (((120n) - 0) + 120n)) * 240n) + (((Wtot) / (1)) * 100n)) + (floor(((1) - 1) / 2.0) * (((((120n) - 0) + 120n) * 240n) + (((Wtot) / (1)) * 200n))) + ((((1) / 2) - floor((1) / 2) == 0) ? (((100n > (((120n) - 0) + 120n) ? 100n : (((120n) - 0) + 120n)) * 240n) + (((Wtot) / (1)) * 100n)) : 0)) / 1 : (((200n > (((120n) - 0) + 160n) ? 200n : (((120n) - 0) + 160n)) * ((Wtot) / (1))) + (floor(((1) - 1) / 2.0) * ((((120n) - 0) + 200n) * ((Wtot) / (1)))) + ((((1) / 2) - floor((1) / 2) == 0) ? ((200n > (((120n) - 0) + 160n) ? 200n : (((120n) - 0) + 160n)) * ((Wtot) / (1))) : 0)) / 1 \\',
-            f'	pd=(((Wtot) / (1)) < 239.5n) ? ((floor((1) / 2.0) * ((2 * (((120n) - 0) + 120n)) + 880n)) + ((((1) / 2) - floor((1) / 2) != 0) ? ((2 * (100n > (((120n) - 0) + 120n) ? 100n : (((120n) - 0) + 120n))) + 680n) : 0)) / 1 : ((floor((1) / 2.0) * ((2 * (((120n) - 0) + 200n)) + (2 * ((Wtot) / (1))))) + ((((1) / 2) - floor((1) / 2) != 0) ? ((2 * (200n > (((120n) - 0) + 160n) ? 200n : (((120n) - 0) + 160n))) + (2 * ((Wtot) / (1)))) : 0)) / 1 \\',
-            f'	ps=(((Wtot) / (1)) < 239.5n) ? (((2 * (100n > (((120n) - 0) + 120n) ? 100n : (((120n) - 0) + 120n))) + 680n) + (floor(((1) - 1) / 2.0) * ((2 * (((120n) - 0) + 120n)) + 880n)) + ((((1) / 2) - floor((1) / 2) == 0) ? ((2 * (100n > (((120n) - 0) + 120n) ? 100n : (((120n) - 0) + 120n))) + 680n) : 0)) / 1 : (((2 * (200n > (((120n) - 0) + 160n) ? 200n : (((120n) - 0) + 160n))) + (2 * ((Wtot) / (1)))) + (floor(((1) - 1) / 2.0) * ((2 * (((120n) - 0) + 200n)) + (2 * ((Wtot) / (1))))) + ((((1) / 2) - floor((1) / 2) == 0) ? ((2 * (200n > (((120n) - 0) + 160n) ? 200n : (((120n) - 0) + 160n))) + (2 * ((Wtot) / (1)))) : 0)) / 1 \\', 
+            f'mn (vdn vgn 0 vbn) {modeln} {mn_supplement}',
             f'\n',	 
             f'simulatorOptions options gmin=1e-13 reltol=1e-4 vabstol=1e-6 iabstol=1e-10 temp={temp} tnom=27',  
             f'sweepvds sweep param=ds start=0 stop={VDS_max} step={VDS_step} {{',  

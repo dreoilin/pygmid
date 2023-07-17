@@ -12,3 +12,4 @@ pygmid.egg-info
 .vscode/
 sweep.*/
 *.pkl
+params.scs
