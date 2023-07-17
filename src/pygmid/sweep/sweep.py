@@ -111,7 +111,7 @@ class Sweep:
         size    -> len(VGS) x len(VDS)
         """
         # TODO: take directory from command line, have this be default
-        sweep_output_directory = Path(__file__).parent / "sweep.ascii/psf"
+        sweep_output_directory = Path(__file__).parent / "sweep.ascii-from-run/psf"
         # TODO: filename pattern should be taken from config file, but could also be hardcoded ?
         if sweep_type == "DC":
             filename_pattern = 'sweepvds-*_sweepvgs.dc'
@@ -123,10 +123,11 @@ class Sweep:
         filelist = sorted([os.path.basename(f) for f in file_paths], key=self._extract_number_regex)
         # psf = PSF( os.path.join(directory, filelist[0]) , use_cache=False, update_cache=False)
         
-        nmos = {f"mn:{param}" : [None] * len(params) for param in params}
-        pmos = {f"mp:{param}" : [None] * len(params) for param in params}
+        nmos = {f"mn:{param}" : [] for param in params}
+        pmos = {f"mp:{param}" : []  for param in params}
+        # nmos = {f"mn:{param}" : [None] * len(params) for param in params}
+        # pmos = {f"mp:{param}" : [None] * len(params) for param in params}
         for i, f in enumerate(filelist):
-            print(f"PROCESSING {i}")
             # reconstruct path
             file_path = os.path.join(sweep_output_directory, f)
             # TODO: try out libpsf
@@ -135,10 +136,10 @@ class Sweep:
             
             for param in params:
                 # TODO: set these arrays to be the correct length and not use .append
-                # nmos[f'mn:{param}'].append( (psf.get_signal(f"mn:{param}").ordinate).T )
-                # pmos[f'mp:{param}'].append( (psf.get_signal(f"mp:{param}").ordinate).T )
-                nmos[f'mn:{param}'] = (psf.get_signal(f"mn:{param}").ordinate).T
-                pmos[f'mp:{param}'] = (psf.get_signal(f"mp:{param}").ordinate).T
+                nmos[f'mn:{param}'].append( (psf.get_signal(f"mn:{param}").ordinate).T )
+                pmos[f'mp:{param}'].append( (psf.get_signal(f"mp:{param}").ordinate).T )
+                # nmos[f'mn:{param}'] = (psf.get_signal(f"mn:{param}").ordinate).T
+                # pmos[f'mp:{param}'] = (psf.get_signal(f"mp:{param}").ordinate).T
 
         nmos_stacked = { k:np.stack(v).T for k,v in nmos.items() }
         pmos_stacked = { k:np.stack(v).T for k,v in pmos.items() }
