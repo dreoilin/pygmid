@@ -58,8 +58,8 @@ class Sweep:
                     params_p = p
                     values_p = p_dict[params_p[0]]
                     for m, outvar in enumerate(self._config['outvars']):
-                        nch[outvar][i,:,:,j] = np.squeeze(nch[outvar][i,:,:,j] + values_n*params_n[2][m])
-                        pch[outvar][i,:,:,j] = np.squeeze(pch[outvar][i,:,:,j] + values_p*params_p[2][m])
+                        nch[outvar][i,:,:,j] = np.squeeze(values_n*params_n[2][m])
+                        pch[outvar][i,:,:,j] = np.squeeze(values_p*params_p[2][m])
                 
                 params = [ k[0].split(':')[1] for k in self._config['n_noise'] ]
                 
@@ -71,8 +71,8 @@ class Sweep:
                     params_p = p
                     values_p = p_dict[params_p[0]]
                     for m, outvar in enumerate(self._config['outvars_noise']):
-                        nch[outvar][i,:,:,j] += np.squeeze(values_n)
-                        pch[outvar][i,:,:,j] += np.squeeze(values_p)
+                        nch[outvar][i,:,:,j] = np.squeeze(values_n)
+                        pch[outvar][i,:,:,j] = np.squeeze(values_p)
 
                 # TODO: uncomment this and clean the temporary files up from the runs
                 # self._cleanup()
@@ -123,11 +123,11 @@ class Sweep:
         filelist = sorted([os.path.basename(f) for f in file_paths], key=self._extract_number_regex)
         # psf = PSF( os.path.join(directory, filelist[0]) , use_cache=False, update_cache=False)
         
-        nmos = {f"mn:{param}" : [] for param in params}
-        pmos = {f"mp:{param}" : []  for param in params}
-        # nmos = {f"mn:{param}" : [None] * len(params) for param in params}
-        # pmos = {f"mp:{param}" : [None] * len(params) for param in params}
-        for i, f in enumerate(filelist):
+        # nmos = {f"mn:{param}" : [] for param in params}
+        # pmos = {f"mp:{param}" : []  for param in params}
+        nmos = {f"mn:{param}" : np.zeros((len(self._config['SWEEP']['VGS']), len(self._config['SWEEP']['VDS']))) for param in params}
+        pmos = {f"mp:{param}" : np.zeros((len(self._config['SWEEP']['VGS']), len(self._config['SWEEP']['VDS']))) for param in params}
+        for VDS_i, f in enumerate(filelist):
             # reconstruct path
             file_path = os.path.join(sweep_output_directory, f)
             # TODO: try out libpsf
@@ -136,12 +136,18 @@ class Sweep:
             
             for param in params:
                 # TODO: set these arrays to be the correct length and not use .append
-                nmos[f'mn:{param}'].append( (psf.get_signal(f"mn:{param}").ordinate).T )
-                pmos[f'mp:{param}'].append( (psf.get_signal(f"mp:{param}").ordinate).T )
+                # nmos[f'mn:{param}'].append( (psf.get_signal(f"mn:{param}").ordinate).T )
+                # pmos[f'mp:{param}'].append( (psf.get_signal(f"mp:{param}").ordinate).T )
                 # nmos[f'mn:{param}'] = (psf.get_signal(f"mn:{param}").ordinate).T
                 # pmos[f'mp:{param}'] = (psf.get_signal(f"mp:{param}").ordinate).T
 
-        nmos_stacked = { k:np.stack(v).T for k,v in nmos.items() }
-        pmos_stacked = { k:np.stack(v).T for k,v in pmos.items() }
+                # might need to be transposed or not
+                nmos[f'mn:{param}'][:, VDS_i] = (psf.get_signal(f"mn:{param}").ordinate).T
+                pmos[f'mp:{param}'][:, VDS_i] = (psf.get_signal(f"mp:{param}").ordinate).T
 
-        return (nmos_stacked, pmos_stacked)
+        # dimensions
+        # nmos_stacked = { mn_param:np.stack(v).T for mn_param,v in nmos.items() }
+        # pmos_stacked = { k:np.stack(v).T for k,v in pmos.items() }
+
+        # return (nmos_stacked, pmos_stacked)
+        return (nmos, pmos)
