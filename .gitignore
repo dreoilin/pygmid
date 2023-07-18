@@ -13,3 +13,4 @@ pygmid.egg-info
 sweep.*/
 *.pkl
 params.scs
+config.cfg
