@@ -26,7 +26,7 @@
 
 ## About
 
-pygmid is a Python 3 port of the gm/ID starter kit by Prof. Boris Murmann 
+pygmid is a Python 3 version of the gm/ID starter kit by Prof. Boris Murmann 
 of Stanford University. The package also offers some scripts from the Paul Jesper's book.
 
 For the gm/ID starter kit, written for MATLAB, please refer to the 'Links'
@@ -84,7 +84,6 @@ print(f'VGS is: {VGS}')
 plt.plot(VDSs, np.transpose(ID))
 ```
 
-~~Currently only lookup modes 1 and 2 are implemented.~~
 Modes 1 (Simple parameter lookup), mode 2 (arbitrary ratio lookup) and mode 3 (cross lookup of ratios) are implemented. The companion lookupVGS function is also included.
 
 ### Technology Extraction Functions
@@ -99,13 +98,13 @@ from pygmid import EKV_param_extraction, XTRACT
 
 ```
 
-Sample usage of this and other utility functions can be found in `test_utility.py` .
+Sample usage of this and other utility functions can be found in `debug_utility.py` .
 
 ### Examples
 
-Usage of lookup scripts are given in `test_lookup.py` and `test_lookupVGS.py`.
+Usage of lookup scripts are given in `debug_lookup.py` and `debug_lookupVGS.py`.
 
-Sample outputs are given below:
+Sample outputs for the 180nm generic pdk used in the Murmann starter pack are given below:
 
 ![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/IDvVDS.png?raw=true)
 
@@ -119,10 +118,12 @@ Sample outputs are given below:
 
 ![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/IDWvsgmID.png?raw=true)
 
+The generic PDK data is hosted <a href="https://github.com/bmurmann/Book-on-gm-ID-design">here</a>.
+<!---
 ### Command Line Interface (CLI)
 
 `pygmid` also features a CLI which can be used to run techweeps to generate transistor data
-
+--->
 ## Authors
 
 - Cian O'Donnell : cian.odonnell@mcci.ie
