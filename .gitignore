@@ -12,5 +12,5 @@ pygmid.egg-info
 .vscode/
 sweep.*/
 *.pkl
-params.scs
+*.scs
 config.cfg
