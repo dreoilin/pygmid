@@ -119,11 +119,13 @@ Sample outputs for the 180nm generic pdk used in the Murmann starter pack are gi
 ![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/IDWvsgmID.png?raw=true)
 
 The generic PDK data is hosted <a href="https://github.com/bmurmann/Book-on-gm-ID-design">here</a>.
-<!---
-### Command Line Interface (CLI)
 
-`pygmid` also features a CLI which can be used to run techweeps to generate transistor data
---->
+### Sweeping a Technology
+
+`pygmid` also features a CLI which can be used to run techweeps to generate transistor data.
+
+*Documentation will be added in due course. This functionality is in a state of flux.*
+
 ## Authors
 
 - Cian O'Donnell : cian.odonnell@mcci.ie
