@@ -6,7 +6,9 @@ from pygmid import sweep, Lookup
 
 from ...should_run import should_run
 
-pytestmark = pytest.test.skip #should_run(skip_reason="No access to sweep debug files")
+import pytest
+
+pytestmark = pytest.mark.skip #should_run(skip_reason="No access to sweep debug files")
 
 def test_sweep_e2e(config_file: Path, expected_output_files: (Path, Path)):
     sweep.run(config_file.absolute().resolve())
