@@ -3,6 +3,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from pygmid import Lookup as lk
+from time import time
 
 # setup mpl
 mpl.rcParams['axes.spines.right'] = False
@@ -10,7 +11,7 @@ mpl.rcParams['axes.spines.top'] = False
 mpl.rcParams.update({"axes.grid" : True})
 
 #%%
-NCH = lk('180nch.mat')  # load MATLAB data into pygmid lookup object
+NCH = lk('90n1rvt.pkl')  # load MATLAB data into pygmid lookup object
 
 VDSs = NCH['VDS']       # lookup object has pseudo-array access to data
 VGSs = np.arange(0.4, 0.6, 0.05)
@@ -43,7 +44,10 @@ plt.show()
 step = 0.1
 gm_ids = np.arange(5, 20+step, step)
 Ls = np.arange(min(NCH['L']),0.3,0.05)
+s = time()
 ft = NCH.look_up('GM_CGG', GM_ID=gm_ids, L =np.arange(min(Ls),0.3,0.05))/2/np.pi
+e = time()
+print(f"Time taken: {(e-s)*1000} [ms]")
 plt.figure()
 plt.plot(gm_ids, 1e-9*ft.T)
 plt.ylabel(r"$f_T$ [GHz]")
