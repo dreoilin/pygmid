@@ -11,7 +11,7 @@ mpl.rcParams['axes.spines.top'] = False
 mpl.rcParams.update({"axes.grid" : True})
 
 #%%
-NCH = lk('90n1rvt.pkl')  # load MATLAB data into pygmid lookup object
+NCH = lk('tsmcN65_n25.pkl')  # load MATLAB data into pygmid lookup object
 
 VDSs = NCH['VDS']       # lookup object has pseudo-array access to data
 VGSs = np.arange(0.4, 0.6, 0.05)
