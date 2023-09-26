@@ -1,5 +1,6 @@
 ![Tests](https://github.com/madrasalach/pygmid/actions/workflows/run-tests.yml/badge.svg?branch=main)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/pygmid)
+[![DOI](https://zenodo.org/badge/510693980.svg)](https://zenodo.org/badge/latestdoi/510693980)
 
 <p align="center">
   <a>
