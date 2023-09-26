@@ -30,6 +30,8 @@
 pygmid is a Python 3 version of the gm/ID starter kit by Prof. Boris Murmann 
 of Stanford University. The package also offers some scripts from the Paul Jesper's book.
 
+If you find this package useful for your research, please consider citing it.
+
 For the gm/ID starter kit, written for MATLAB, please refer to the 'Links'
 section at Prof. Murmann's website: https://web.stanford.edu/~murmann.
 
@@ -48,7 +50,7 @@ To install pygmid from source, download from Github and run pip:
 ## Usage
 
 ### Scripting with the Lookup Class
-A gm/ID lookup object can be generated with the `Lookup` class. The lookup object requires lookup data for initialisation. Currently, only `.mat` files are supported.
+A gm/ID lookup object can be generated with the `Lookup` class. The lookup object requires lookup data for initialisation. Both `.mat` files generated using MATLAB or `.pkl` files generated using pygmid's own characterisation script are supported.
 
 You can create a lookup object as follows:
 
