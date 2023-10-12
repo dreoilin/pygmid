@@ -170,8 +170,6 @@ class Config:
 
 
 #ngspice
-
-
     def _generate_netlist_for_ngspice(self):
         modelfile = self._config['MODEL']['FILE']
         paramfile = self._config['MODEL']['PARAMFILE']
