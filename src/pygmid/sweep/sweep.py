@@ -12,11 +12,13 @@ from tqdm import tqdm
 
 from .config import Config
 from .simulator import SpectreSimulator
+from .simulator import NgspiceSimulator
 
 
 class Sweep:
     def __init__(self, config_file_path: str):
         self._config = Config(config_file_path)
+        
         spectre_args = ['+escchars', 
                 '=log', 
                 './sweep/psf/spectre.out', 
@@ -24,10 +26,19 @@ class Sweep:
                 'psfascii', 
                 '-raw', 
                 './sweep/psf']
+        
+        ngspice_args = ['+escchars', 
+                '=log', 
+                './sweep/psf/spectre.out', 
+                '-format', 
+                'psfascii', 
+                '-raw', 
+                './sweep/psf']
 
-        self._simulator = SpectreSimulator(*spectre_args)
+        self._spectre_simulator = SpectreSimulator(*spectre_args)
+        self._ngspice_simulator = NgspiceSimulator(*ngspice_args)
     
-    def run(self):
+    def run(self, simulator_selection):
         
         Ls = self._config['SWEEP']['LENGTH']
         VSBs = self._config['SWEEP']['VSB']
@@ -49,10 +60,10 @@ class Sweep:
             for i, L in enumerate(tqdm(Ls,desc="Sweeping L")):
                 for j, VSB in enumerate(tqdm(VSBs, desc="Sweeping VSB", leave=False)):
                     self._write_params(length=L, sb=VSB)
-                    
+                   
                     sim_path = f"./sweep/psf_{i}_{j}"
-                    self._simulator.directory = sim_path
-                    cp = self._simulator.run('pysweep.scs')
+                    if  simulator_selection == 'spectre': self._spectre_simulator.directory = sim_path
+                    if  simulator_selection == 'spectre': cp = self._spectre_simulator.run('pysweep.scs')
 
                     futures.append(executor.submit(self.parse_sim, *[sim_path]))
             

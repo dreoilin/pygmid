@@ -11,6 +11,13 @@ def matrange(start, step, stop):
 def toupper(option):
     return option.upper()
 
+
+
+
+
+
+#Spectra
+
 class Config:
     def __init__(self, config_file_path: str):
         self._configParser = configparser.ConfigParser()
@@ -19,7 +26,9 @@ class Config:
         self._configParser.read(config_file_path)
         self._config = {s:dict(self._configParser.items(s)) for s in self._configParser.sections()}
         self._parse_ranges()
-        self._generate_netlist()        
+        #self._generate_netlist()
+        self._generate_netlist_for_spectre()
+        selg._generate_netlist_for_ngspice()
         
         n = []
         p = []
@@ -104,7 +113,7 @@ class Config:
             'VSB' : np.array(self._config['SWEEP']['VSB']).T 
         }
         
-    def _generate_netlist(self):
+    def _generate_netlist_for_spectre(self):
         modelfile = self._config['MODEL']['FILE']
         paramfile = self._config['MODEL']['PARAMFILE']
         width = self._config['SWEEP']['WIDTH']
@@ -158,3 +167,52 @@ class Config:
             )
         with open('pysweep.scs', 'w') as outfile:
             outfile.write('\n'.join(netlist))
+
+
+#ngspice
+
+
+    def _generate_netlist_for_ngspice(self):
+        modelfile = self._config['MODEL']['FILE']
+        paramfile = self._config['MODEL']['PARAMFILE']
+        width = self._config['SWEEP']['WIDTH']
+        modelp = self._config['MODEL']['MODELP']
+        modeln = self._config['MODEL']['MODELN']
+        corner = self._config['MODEL']['CORNER']
+        temp =int(self._config['MODEL']['TEMP'])-273
+        VDS_max = max(self._config['SWEEP']['VDS'])
+        VDS_step = self._config['SWEEP']['VDS'][1] - self._config['SWEEP']['VDS'][0] 
+        VGS_max = max(self._config['SWEEP']['VGS'])
+        VGS_step = self._config['SWEEP']['VGS'][1] - self._config['SWEEP']['VGS'][0]
+    
+        NFING = self._config['SWEEP']['NFING']
+    
+        netlist = (
+            f"//pysweep.scs",
+            f"******* generated circuit ************ ",
+            f".lib {modelfile} {corner}",
+            f'\n',
+            f'\n',
+            f'Vgs      gate GND       0.0',  
+            f'Vds      net3 GND       0.0',   
+            f'Vd       net3 drain     0.0',   
+            f'\n',	
+            f'\n',	 
+            f'.param temp={temp}',	 
+            f'\n',	 
+            f'mp  drain gate GND GND {modelp} ',
+            f'\n',	 
+            f'mn  drain gate GND GND {modeln} ',
+            f'\n',	 
+            f'.control',	 
+            f'pre_osdi ./psp103_nqs.osdi',	 
+            f'save all                  ',	 
+            f'dc Vds 0 {VDS_max} {VDS_step} Vgs 0 {VGS_max} {VGS_step}',	 
+            f'.endc',	 
+            f'.GLOBAL GND',	 
+            f'.end',	 
+            )
+        with open('pysweep.scs', 'w') as outfile:
+            outfile.write('\n'.join(netlist))
+
+
