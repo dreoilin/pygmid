@@ -10,9 +10,9 @@ import numpy as np
 import psf_utils
 from tqdm import tqdm
 
-from .config import Config
-from .simulator import SpectreSimulator
-from .simulator import NgspiceSimulator
+from config import Config
+from simulator import SpectreSimulator
+from simulator import NgspiceSimulator
 
 
 class Sweep:
@@ -111,16 +111,23 @@ class Sweep:
 
         return i, j, n_dict, p_dict, nn_dict, pn_dict
 
-    def _write_params(self, sb=0, length=1):
+
+    def _write_params_spectre(self, sb=0, length=1):
         with open('params.scs', 'w') as outfile:
             outfile.write(f"parameters length={length}\n")
             outfile.write(f"parameters sb={sb}")
-    
+
+    def _write_params_ngspice(self, sb=0, length=1):
+        with open('params.lib', 'w') as outfile:
+            outfile.write(f".param Lp={length}\n")
+            outfile.write(f".param Vsb={sb}")
+
     def _cleanup(self):
         try:
             shutil.rmtree("./sweep")
             os.remove("pysweep.scs")
-            os.remove("params.scs")
+            #os.remove("params.scs")
+            os.remove("params.lib")
         except OSError as e:
             print("Could not perform cleanup:\nFile - {e.filename}\nError - {e.strerror}")
 
