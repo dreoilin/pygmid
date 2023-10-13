@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pygmid import sweep, Lookup
 
-#from ...should_run import should_run
+from should_run import should_run
 
 import pytest
 
@@ -26,5 +26,5 @@ def test_sweep_e2e(config_file: Path, expected_output_files: (Path, Path)):
     # assert filecmp.cmp(anf.absolute().resolve(), enf.absolute().resolve(), shallow=False)
     
     
-test_sweep_e2e('tests/pygmid/sweep/config_IHP130.cfg' )
+
 

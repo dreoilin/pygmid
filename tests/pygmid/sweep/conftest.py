@@ -11,4 +11,4 @@ def expected_output_files():
 
 @pytest.fixture(scope="session")
 def config_file():
-    return Path('tests/files/config.cfg')
+    return Path('tests/pygmid/sweep/config_IHP130.cfg') 

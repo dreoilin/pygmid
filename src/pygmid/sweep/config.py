@@ -27,8 +27,8 @@ class Config:
         self._config = {s:dict(self._configParser.items(s)) for s in self._configParser.sections()}
         self._parse_ranges()
         #self._generate_netlist()
-        self._generate_netlist_for_spectre()
-        selg._generate_netlist_for_ngspice()
+        #self._generate_netlist_for_spectre()
+        self._generate_netlist_for_ngspice()
         
         n = []
         p = []
@@ -113,12 +113,13 @@ class Config:
             'VSB' : np.array(self._config['SWEEP']['VSB']).T 
         }
         
-    def _generate_netlist_for_spectre(self):
+    '''def _generate_netlist_for_spectre(self):
         modelfile = self._config['MODEL']['FILE']
         paramfile = self._config['MODEL']['PARAMFILE']
         width = self._config['SWEEP']['WIDTH']
         modelp = self._config['MODEL']['MODELP']
         modeln = self._config['MODEL']['MODELN']
+        
         try:
             mn_supplement = '\n\t'.join(json.loads(self._config['MODEL']['MN']))
         except json.decoder.JSONDecodeError:
@@ -127,6 +128,7 @@ class Config:
             mp_supplement = '\n\t'.join(json.loads(self._config['MODEL']['MP']))
         except json.decoder.JSONDecodeError:
             raise "Error parsing config: make sure MP has no weird characters in it, and that the list isn't terminated with a trailing ','"
+        
         temp =int(self._config['MODEL']['TEMP'])-273
         VDS_max = max(self._config['SWEEP']['VDS'])
         VDS_step = self._config['SWEEP']['VDS'][1] - self._config['SWEEP']['VDS'][0] 
@@ -167,7 +169,7 @@ class Config:
             )
         with open('pysweep.scs', 'w') as outfile:
             outfile.write('\n'.join(netlist))
-
+'''
 
 #ngspice
     def _generate_netlist_for_ngspice(self):

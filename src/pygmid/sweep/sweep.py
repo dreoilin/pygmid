@@ -59,13 +59,18 @@ class Sweep:
             futures = []
             for i, L in enumerate(tqdm(Ls,desc="Sweeping L")):
                 for j, VSB in enumerate(tqdm(VSBs, desc="Sweeping VSB", leave=False)):
-                    self._write_params(length=L, sb=VSB)
-                   
-                    sim_path = f"./sweep/psf_{i}_{j}"
-                    if  simulator_selection == 'spectre': self._spectre_simulator.directory = sim_path
-                    if  simulator_selection == 'spectre': cp = self._spectre_simulator.run('pysweep.scs')
-
-                    futures.append(executor.submit(self.parse_sim, *[sim_path]))
+                    
+                    if  simulator_selection == 'spectre':
+                        self._write_params_spectre(length=L, sb=VSB)
+                       
+                        sim_path = f"./sweep/psf_{i}_{j}"
+                        self._spectre_simulator.directory = sim_path
+                        cp = self._spectre_simulator.run('pysweep.scs')
+    
+                        futures.append(executor.submit(self.parse_sim, *[sim_path]))
+                        
+                    #if simulator_selection == 'ngspice':
+                        #...
             
             concurrent.futures.wait(futures)
 
