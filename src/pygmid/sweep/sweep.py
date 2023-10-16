@@ -1,4 +1,3 @@
-import concurrent.futures
 import glob
 import multiprocessing as mp
 import os
@@ -144,7 +143,7 @@ class Sweep:
         else:
             return None
 
-    def _extract_sweep_params(self, sweep_output_directory, sweep_type="DC"):
+    def _extract_sweep_params(self, sweep_output_directory, sweep_type="DC"):  #parser
         """
         Params  -> list of strings
         size    -> len(VGS) x len(VDS)
