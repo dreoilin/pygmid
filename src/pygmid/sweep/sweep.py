@@ -66,7 +66,7 @@ class Sweep:
                         self._spectre_simulator.directory = sim_path
                         cp = self._spectre_simulator.run('pysweep.scs')
     
-                        futures.append(executor.submit(self.parse_sim, *[sim_path]))
+                        futures.append(executor.submit(self.parse_sim_spectre, *[sim_path]))
                         
                     #if simulator_selection == 'ngspice':
                         #...
@@ -103,18 +103,32 @@ class Sweep:
             pickle.dump(pch, f)
         return (modeln_file_path, modelp_file_path)
     
-    def parse_sim(self, filepath):
+    def parse_sim_spectre(self, filepath):
         
         fileparts = filepath.split("_")
         i = int(fileparts[-2])
         j = int(fileparts[-1])
         
-        (n_dict, p_dict) = self._extract_sweep_params(filepath)
+        (n_dict, p_dict) = self._extract_sweep_params_spectre(filepath)
         
-        (nn_dict, pn_dict) = self._extract_sweep_params(filepath, sweep_type="NOISE")
+        (nn_dict, pn_dict) = self._extract_sweep_params_spectre(filepath, sweep_type="NOISE")
 
         return i, j, n_dict, p_dict, nn_dict, pn_dict
 
+
+    def parse_sim_ngspice(self, filepath):
+        
+        fileparts = filepath.split("_")
+        i = int(fileparts[-2])
+        j = int(fileparts[-1])
+        
+        (n_dict, p_dict) = self._extract_sweep_params_ngspice(filepath)
+        
+        (nn_dict, pn_dict) = self._extract_sweep_params_ngspice(filepath, sweep_type="NOISE")
+
+        return i, j, n_dict, p_dict, nn_dict, pn_dict
+    
+    
 
     def _write_params_spectre(self, sb=0, length=1):
         with open('params.scs', 'w') as outfile:
@@ -143,14 +157,14 @@ class Sweep:
         else:
             return None
 
-    def _extract_sweep_params(self, sweep_output_directory, sweep_type="DC"):  #parser
+    def _extract_sweep_params_spectre(self, sweep_output_directory, sweep_type="DC"):  #parser
         """
         Params  -> list of strings
         size    -> len(VGS) x len(VDS)
         """
         if sweep_type == "DC":
             filename_pattern = 'sweepvds-*_sweepvgs.dc'
-            params = [ k[0].split(':')[1] for k in self._config['n'] ]
+            params = [ k[0].split(':')[1] for k in self._config['n'] ]     
         elif sweep_type == "NOISE":
             filename_pattern = 'sweepvds_noise-*_sweepvgs_noise.noise'
             params = [ k[0].split(':')[1] for k in self._config['n_noise'] ]
@@ -170,5 +184,43 @@ class Sweep:
             for param in params:
                 nmos[f'mn:{param}'][:,VDS_i] = (psf.get_signal(f"mn:{param}").ordinate).T
                 pmos[f'mp:{param}'][:,VDS_i] = (psf.get_signal(f"mp:{param}").ordinate).T
+        
+        return (nmos, pmos)
+    
+    
+    def _extract_sweep_params_ngspice(self, sweep_output_directory, sweep_type="DC"):  #parser
+        """
+        Params  -> list of strings
+        size    -> len(VGS) x len(VDS)
+        """
+        if sweep_type == "DC":
+            filename_pattern = 'sweepvds-*_sweepvgs.dc'
+            params = [ k[0].split(':')[1] for k in self._config['n'] ]     #header de columnas  ['id', 'vth', ....]
+        elif sweep_type == "NOISE":
+            filename_pattern = 'sweepvds_noise-*_sweepvgs_noise.noise'
+            params = [ k[0].split(':')[1] for k in self._config['n_noise'] ]
+
+        file_paths = glob.glob(os.path.join(sweep_output_directory, filename_pattern))
+        # remove directory in case it contains number. Only want to sort based on filename itself
+        filelist = sorted([os.path.basename(f) for f in file_paths], key=self._extract_number_regex)
+
+        nmos = {f"mn:{param}" : np.zeros((len(self._config['SWEEP']['VGS']), len(self._config['SWEEP']['VDS']))) for param in params}
+        pmos = {f"mp:{param}" : np.zeros((len(self._config['SWEEP']['VGS']), len(self._config['SWEEP']['VDS']))) for param in params}
+        
+        
+        
+        # leer archvio y parsear datos. No hay archivos distintos 
+        # cual es orden del sweep en spectre? vgs first or vds 
+        for VDS_i, f in enumerate(filelist):
+            # reconstruct path
+            file_path = os.path.join(sweep_output_directory, f) 
+            # need to extract parameter from PSFs
+            psf = psf_utils.PSF( file_path )
+            
+            for param in params:
+                nmos[f'mn:{param}'][:,VDS_i] = (psf.get_signal(f"mn:{param}").ordinate).T
+                pmos[f'mp:{param}'][:,VDS_i] = (psf.get_signal(f"mp:{param}").ordinate).T
+                
+                #conseguir capeta para i,j 
         
         return (nmos, pmos)
