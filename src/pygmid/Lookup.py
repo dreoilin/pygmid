@@ -271,8 +271,8 @@ class Lookup:
                     y_right = y[idx:-1, i]
                     output[i, j] = interp1(x_right, y_right, **ipkwargs)(xdesired[j])
                 elif (num.upper() == 'GM') and (den.upper() == 'CGG') or (den.upper() == 'CGG'):
-                    x_left = x[1:idx, i]
-                    y_left = y[1:idx, i]
+                    x_left = x[:idx, i]
+                    y_left = y[:idx, i]
                     output[i, j] = interp1(x_left, y_left, **ipkwargs)(xdesired[j])
                 else:
                     crossings = len(np.argwhere(np.diff(np.sign(x[:,i]-xdesired[j]+eps))))
