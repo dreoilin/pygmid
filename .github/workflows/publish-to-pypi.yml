@@ -5,7 +5,7 @@ on:
 
 jobs:
   test:
-    uses: madrasalach/pygmid/.github/workflows/run-tests.yml@main
+    uses: dreoilin/pygmid/.github/workflows/run-tests.yml@main
   build:
     name: Build and upload python distributions
     needs: test
