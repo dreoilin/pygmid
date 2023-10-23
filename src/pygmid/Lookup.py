@@ -279,7 +279,7 @@ class Lookup:
                     if crossings > 1:
                         print('Crossing warning')
                         return []
-                output[i, j] = interp1(x_right, y_right, **ipkwargs)(xdesired[j])
+                    output[i, j] = interp1(x_right, y_right, **ipkwargs)(xdesired[j])
 
         output = np.squeeze(output)
 
