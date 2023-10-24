@@ -258,7 +258,10 @@ class Lookup:
 
         dim = x.shape
         output = np.zeros((dim[1], len(xdesired)))
-        ipkwargs['kind'] = pars['METHOD']
+        ipkwargs = {
+            'kind' : pars['METHOD'],
+            'fill_value' : np.NaN
+        }
         
         for i in range(0, dim[1]):
             for j in range(0, len(xdesired)):
