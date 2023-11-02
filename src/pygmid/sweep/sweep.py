@@ -196,32 +196,32 @@ class Sweep:
         if sweep_type == "DC":
             #filename_pattern = 'sweepvds-*_sweepvgs.dc'
             lv_nmos_data = pd.read_csv('ihp_lv_nmos.csv', header=None, delimiter=r"\s+")
-            lv_nmos_data = lv_nmos_data.drop([2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32], axis = 1) #drop Vds voltages, just keep the 1 column
-            params_names = ['vds','ids', 'vth', 'igd', 'igs', 'gm', 
+            lv_nmos_data = lv_nmos_data.drop([2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32], axis = 1) #drop Vgs voltages, just keep the 0 column
+            params_names = ['vgs','ids', 'vth', 'igd', 'igs', 'gm', 
                             'gmb', 'gds', 'cgg', 'cgs', 'cgd', 'cgb', 
                             'cdd', 'cdg', 'css', 'csg', 'cjd', 'cjs']
             lv_nmos_data.columns = params_names #set new columns names
             
             
-            #find the ranges of the sweeps(vgs)
-            vgs_sweep_groups_delimiters = []
-            for i in range(len(lv_nmos_data['vds'])):
-              if lv_nmos_data['vds'][i] == upper_vgs:
-                vgs_sweep_groups_delimiters.append(i)
+            #find the ranges of the sweeps(vds)
+            vds_sweep_groups_delimiters = []
+            for i in range(len(lv_nmos['vgs'])):
+              if lv_nmos['vgs'][i] == upper_vgs:
+                vds_sweep_groups_delimiters.append(i)
             
-            vgs_sweeps = [] #list to save individual sweeps(vgs) dataframes
-            for i in range(len(vgs_sweep_groups_delimiters)):
-              
-              if vgs_sweep_groups_delimiters[i] == vgs_sweep_groups_delimiters[0]: #corner case
-                res = lv_nmos_data.iloc[:vgs_sweep_groups_delimiters[0]+1,:]
+            vds_sweeps = [] #list to save individual sweeps(vds) dataframes
+            for i in range(len(vds_sweep_groups_delimiters)):
             
-              elif vgs_sweep_groups_delimiters[i] == vgs_sweep_groups_delimiters[-1]: #corner case
-                res = lv_nmos_data.iloc[vgs_sweep_groups_delimiters[i-1]+1:]
+              if vds_sweep_groups_delimiters[i] == vds_sweep_groups_delimiters[0]: #corner case
+                res = lv_nmos.iloc[:vds_sweep_groups_delimiters[0]+1,:]
+            
+              elif vds_sweep_groups_delimiters[i] == vds_sweep_groups_delimiters[-1]: #corner case
+                res = lv_nmos.iloc[vds_sweep_groups_delimiters[i-1]+1:]
             
               else:
-                res = lv_nmos_data.iloc[vgs_sweep_groups_delimiters[i-1]+1:vgs_sweep_groups_delimiters[i]+1,:]
+                res = lv_nmos.iloc[vds_sweep_groups_delimiters[i-1]+1:vds_sweep_groups_delimiters[i]+1,:]
             
-              vgs_sweeps.append(res)  #sweep data saved here
+              vds_sweeps.append(res)
             
             
         elif sweep_type == "NOISE":
