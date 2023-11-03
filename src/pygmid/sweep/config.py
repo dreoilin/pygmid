@@ -13,8 +13,7 @@ def toupper(option):
 
 class Config:
     def __init__(self, config_file_path: str):
-        self._configParser = configparser.ConfigParser()
-        #self._configParser.optionxform = lambda option: option.upper()		
+        self._configParser = configparser.ConfigParser()	
         self._configParser.optionxform = toupper
         self._configParser.read(config_file_path)
         self._config = {s:dict(self._configParser.items(s)) for s in self._configParser.sections()}

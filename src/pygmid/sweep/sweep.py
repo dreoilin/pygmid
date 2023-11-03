@@ -11,21 +11,26 @@ import psf_utils
 from tqdm import tqdm
 
 from .config import Config
-from .simulator import SpectreSimulator
+from .simulator import Simulator
 
-
-class Sweep:
-    def __init__(self, config_file_path: str):
-        self._config = Config(config_file_path)
-        spectre_args = ['+escchars', 
+Simulator_ARGS = {
+    'spectre' : ['+escchars', 
                 '=log', 
                 './sweep/psf/spectre.out', 
                 '-format', 
                 'psfascii', 
                 '-raw', 
-                './sweep/psf']
+                './sweep/psf'],
 
-        self._simulator = SpectreSimulator(*spectre_args)
+    'ngspice' : None
+}
+
+class Sweep:
+    def __init__(self, config_file_path: str):
+        self._config = Config(config_file_path)
+        simulator = self._config['SIMULATOR']
+
+        self._simulator = Simulator(simulator, Simulator_ARGS[simulator])
     
     def run(self):
         
@@ -49,12 +54,15 @@ class Sweep:
             for i, L in enumerate(tqdm(Ls,desc="Sweeping L")):
                 for j, VSB in enumerate(tqdm(VSBs, desc="Sweeping VSB", leave=False)):
                     self._write_params(length=L, sb=VSB)
-                    
+                    # !TODO check how ngspice outputs raw file
+                    # !TODO how to specify output folder from ngspice command line
                     sim_path = f"./sweep/psf_{i}_{j}"
                     self._simulator.directory = sim_path
+                    simulator = self._simulator.simulator
+                    # !TODO necessary to change extension?
                     cp = self._simulator.run('pysweep.scs')
 
-                    futures.append(executor.submit(self.parse_sim, *[sim_path]))
+                    futures.append(executor.submit(self.parse_sim, *[sim_path, simulator]))
             
             concurrent.futures.wait(futures)
 
@@ -88,15 +96,15 @@ class Sweep:
             pickle.dump(pch, f)
         return (modeln_file_path, modelp_file_path)
     
-    def parse_sim(self, filepath):
+    def parse_sim(self, filepath, simulator):
         
         fileparts = filepath.split("_")
         i = int(fileparts[-2])
         j = int(fileparts[-1])
         
-        (n_dict, p_dict) = self._extract_sweep_params(filepath)
+        (n_dict, p_dict) = self._extract_sweep_params(filepath, simulator)
         
-        (nn_dict, pn_dict) = self._extract_sweep_params(filepath, sweep_type="NOISE")
+        (nn_dict, pn_dict) = self._extract_sweep_params(filepath, simulator, sweep_type="NOISE")
 
         return i, j, n_dict, p_dict, nn_dict, pn_dict
 
@@ -121,32 +129,36 @@ class Sweep:
         else:
             return None
 
-    def _extract_sweep_params(self, sweep_output_directory, sweep_type="DC"):
+    def _extract_sweep_params(self, sweep_output_directory, simulator, sweep_type="DC"):
         """
         Params  -> list of strings
         size    -> len(VGS) x len(VDS)
         """
-        if sweep_type == "DC":
-            filename_pattern = 'sweepvds-*_sweepvgs.dc'
-            params = [ k[0].split(':')[1] for k in self._config['n'] ]
-        elif sweep_type == "NOISE":
-            filename_pattern = 'sweepvds_noise-*_sweepvgs_noise.noise'
-            params = [ k[0].split(':')[1] for k in self._config['n_noise'] ]
+        if simulator == 'spectre':
+            if sweep_type == "DC":
+                filename_pattern = 'sweepvds-*_sweepvgs.dc'
+                params = [ k[0].split(':')[1] for k in self._config['n'] ]
+            elif sweep_type == "NOISE":
+                filename_pattern = 'sweepvds_noise-*_sweepvgs_noise.noise'
+                params = [ k[0].split(':')[1] for k in self._config['n_noise'] ]
 
-        file_paths = glob.glob(os.path.join(sweep_output_directory, filename_pattern))
-        # remove directory in case it contains number. Only want to sort based on filename itself
-        filelist = sorted([os.path.basename(f) for f in file_paths], key=self._extract_number_regex)
+            file_paths = glob.glob(os.path.join(sweep_output_directory, filename_pattern))
+            # remove directory in case it contains number. Only want to sort based on filename itself
+            filelist = sorted([os.path.basename(f) for f in file_paths], key=self._extract_number_regex)
 
-        nmos = {f"mn:{param}" : np.zeros((len(self._config['SWEEP']['VGS']), len(self._config['SWEEP']['VDS']))) for param in params}
-        pmos = {f"mp:{param}" : np.zeros((len(self._config['SWEEP']['VGS']), len(self._config['SWEEP']['VDS']))) for param in params}
-        for VDS_i, f in enumerate(filelist):
-            # reconstruct path
-            file_path = os.path.join(sweep_output_directory, f)
-            # need to extract parameter from PSFs
-            psf = psf_utils.PSF( file_path )
-            
-            for param in params:
-                nmos[f'mn:{param}'][:,VDS_i] = (psf.get_signal(f"mn:{param}").ordinate).T
-                pmos[f'mp:{param}'][:,VDS_i] = (psf.get_signal(f"mp:{param}").ordinate).T
+            nmos = {f"mn:{param}" : np.zeros((len(self._config['SWEEP']['VGS']), len(self._config['SWEEP']['VDS']))) for param in params}
+            pmos = {f"mp:{param}" : np.zeros((len(self._config['SWEEP']['VGS']), len(self._config['SWEEP']['VDS']))) for param in params}
+            for VDS_i, f in enumerate(filelist):
+                # reconstruct path
+                file_path = os.path.join(sweep_output_directory, f)
+                # need to extract parameter from PSFs
+                psf = psf_utils.PSF( file_path )
+                
+                for param in params:
+                    nmos[f'mn:{param}'][:,VDS_i] = (psf.get_signal(f"mn:{param}").ordinate).T
+                    pmos[f'mp:{param}'][:,VDS_i] = (psf.get_signal(f"mp:{param}").ordinate).T
+        elif simulator == 'ngspice':
+            # !TODO parsing here
+            pass
         
         return (nmos, pmos)
