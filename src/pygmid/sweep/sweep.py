@@ -29,7 +29,7 @@ SIMULATOR_ARGS = {
 class Sweep:
     def __init__(self, config_file_path: str):
         self._config = Config(config_file_path)
-        simulator = self._config['SIMULATOR']
+        simulator = self._config['SETTINGS']['SIMULATOR']
 
         self._simulator = Simulator(simulator, SIMULATOR_ARGS[simulator])
     
@@ -64,7 +64,9 @@ class Sweep:
                     if simulator == 'spectre':
                         cp = self._simulator.run('pysweep.scs')
                     elif simulator == 'ngspice':
-                        cp = self._simulator.run('pysweep.scs', {'cwd' : sim_path})
+                        if not os.path.exists(sim_path):
+                            os.makedirs(sim_path)
+                        cp = self._simulator.run('./../../pysweep.scs', **{'cwd' : sim_path})
 
                     futures.append(executor.submit(self.parse_sim, *[sim_path]))
             
@@ -113,9 +115,16 @@ class Sweep:
         return i, j, n_dict, p_dict, nn_dict, pn_dict
 
     def _write_params(self, sb=0, length=1):
-        with open('params.scs', 'w') as outfile:
-            outfile.write(f"parameters length={length}\n")
-            outfile.write(f"parameters sb={sb}")
+        if self._simulator.simulator == 'spectre':
+            ext = 'scs'
+            with open(f'params.{ext}', 'w') as outfile:
+                outfile.write(f"parameters length={length}\n")
+                outfile.write(f"parameters sb={sb}")
+        elif self._simulator.simulator == 'ngspice':
+            ext = 'lib'
+            with open(f'params.{ext}', 'w') as outfile:
+                outfile.write(f".param length={length}\n")
+                outfile.write(f".param sb={sb}")
     
     def _cleanup(self):
         try:

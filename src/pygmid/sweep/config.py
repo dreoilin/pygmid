@@ -116,6 +116,13 @@ class Config:
         simulator = self._config.get('SETTINGS', 'spectre').get('SIMULATOR', 'spectre')
         # parse additional settings
         additional_settings = self._config.get('SETTINGS', []).get('RAW_INCLUDE', [])
+        temp =int(self._config['MODEL']['TEMP'])-273
+        VDS_max = max(self._config['SWEEP']['VDS'])
+        VDS_step = self._config['SWEEP']['VDS'][1] - self._config['SWEEP']['VDS'][0] 
+        VGS_max = max(self._config['SWEEP']['VGS'])
+        VGS_step = self._config['SWEEP']['VGS'][1] - self._config['SWEEP']['VGS'][0]
+    
+        NFING = self._config['SWEEP']['NFING']
         if simulator == "spectre":
             try:
                 mn_supplement = '\n\t'.join(json.loads(self._config['MODEL']['MN']))
@@ -125,13 +132,6 @@ class Config:
                 mp_supplement = '\n\t'.join(json.loads(self._config['MODEL']['MP']))
             except json.decoder.JSONDecodeError:
                 raise "Error parsing config: make sure MP has no weird characters in it, and that the list isn't terminated with a trailing ','"
-            temp =int(self._config['MODEL']['TEMP'])-273
-            VDS_max = max(self._config['SWEEP']['VDS'])
-            VDS_step = self._config['SWEEP']['VDS'][1] - self._config['SWEEP']['VDS'][0] 
-            VGS_max = max(self._config['SWEEP']['VGS'])
-            VGS_step = self._config['SWEEP']['VGS'][1] - self._config['SWEEP']['VGS'][0]
-        
-            NFING = self._config['SWEEP']['NFING']
             
             netlist = [
                 f"//pysweep.scs",
@@ -163,28 +163,28 @@ class Config:
                 f'	sweepvgs_noise noise freq=1 oprobe=vnoi param=gs start=0 stop={VGS_max} step={VGS_step}', 
                 f'}}'
                 ]
-            netlist.insert(3, additional_settings)
+            netlist[3:3] = eval(additional_settings)
         elif simulator == 'ngspice':
             netlist = [
                 f"*//pysweep.scs",
                 f"******* generated circuit ************ ",
                 f".lib {modelfile}",
-                f".include {paramfile}",
+                f".include ./../../{paramfile}",
                 f'\n',
                 f'\n',
                 f'Vgs_n      gate_n  GND       0.0',
                 f'Vds_n      drain_n GND       0.0',
-                f'Vb_n       bulk_n  GND       {{Vsb}}',
+                f'Vb_n       bulk_n  GND       {{sb}}',
                 f'Vgs_p      gate_n  GND       0.0',
                 f'Vds_p      drain_p GND       0.0',
-                f'Vb_p       bulk_p  GND       {{-Vsb}}',
+                f'Vb_p       bulk_p  GND       {{-sb}}',
                 f'\n',
                 f'\n',
                 f'.param temp={temp}',
                 f'\n',
-                f'mp  drain_p gate_p GND bulk_p    {modelp} W={width}u L={{Lp}}u',
+                f'mp  drain_p gate_p GND bulk_p    {modelp} W={width}u L={{length}}u',
                 f'\n',
-                f'mn  drain_n gate_n GND bulk_n    {modeln} W={width}u L={{Lp}}u',
+                f'mn  drain_n gate_n GND bulk_n    {modeln} W={width}u L={{length}}u',
                 f'\n',
                 f'.control',
                 f'save all                  ',
@@ -197,6 +197,6 @@ class Config:
                 f'.GLOBAL GND',
                 f'.end',
             ]
-            netlist.insert(-10, eval(additional_settings))
+            netlist[-10:-10] = eval(additional_settings)
         with open('pysweep.scs', 'w') as outfile:
             outfile.write('\n'.join(netlist))
