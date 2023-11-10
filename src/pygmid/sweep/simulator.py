@@ -18,11 +18,11 @@ class Simulator:
     def directory(self, dir):
         self.__args[-1] = dir
 
-    def run(self, filename: str):
+    def run(self, filename: str, **kwargs):
         infile = filename
         try:
             cmd_args = [self.__simulator, filename] + [*self.__args]
-            cp = subprocess.run(cmd_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            cp = subprocess.run(cmd_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
         except subprocess.CalledProcessError as e:
             logging.info(f"Error executing process\n\n{e}")
             return
