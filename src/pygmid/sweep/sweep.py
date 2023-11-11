@@ -53,7 +53,9 @@ class Sweep:
             # A list to store futures for data parsing
             futures = []
             for i, L in enumerate(tqdm(Ls,desc="Sweeping L")):
+            # for i, L in enumerate(Ls):
                 for j, VSB in enumerate(tqdm(VSBs, desc="Sweeping VSB", leave=False)):
+                # for j, VSB in enumerate(VSBs):
                     self._write_params(length=L, sb=VSB)
                     # !TODO check how ngspice outputs raw file
                     # !TODO how to specify output folder from ngspice command line
@@ -77,20 +79,25 @@ class Sweep:
             for n,p in zip(self._config['n'],self._config['p']):
                 params_n = n
                 values_n = n_dict[params_n[0]]
+                print(params_n)
+                print(values_n)
+                print(values_n.shape)
                 params_p = p
                 values_p = p_dict[params_p[0]]
                 for m, outvar in enumerate(self._config['outvars']):
+                    import IPython; IPython.embed()
                     nch[outvar][i,:,:,j] += np.squeeze(values_n*params_n[2][m])
                     pch[outvar][i,:,:,j] += np.squeeze(values_p*params_p[2][m])
-
-            for n,p in zip(self._config['n_noise'],self._config['p_noise']):
-                params_n = n
-                values_n = nn_dict[params_n[0]]
-                params_p = p
-                values_p = pn_dict[params_p[0]]
-                for m, outvar in enumerate(self._config['outvars_noise']):
-                    nch[outvar][i,:,:,j] += np.squeeze(values_n)
-                    pch[outvar][i,:,:,j] += np.squeeze(values_p)
+            
+            if self._simulator.simulator == 'spectre':
+                for n,p in zip(self._config['n_noise'],self._config['p_noise']):
+                    params_n = n
+                    values_n = nn_dict[params_n[0]]
+                    params_p = p
+                    values_p = pn_dict[params_p[0]]
+                    for m, outvar in enumerate(self._config['outvars_noise']):
+                        nch[outvar][i,:,:,j] += np.squeeze(values_n)
+                        pch[outvar][i,:,:,j] += np.squeeze(values_p)
         
         self._cleanup()
         # then save data to file
@@ -110,7 +117,11 @@ class Sweep:
         
         (n_dict, p_dict) = self._extract_sweep_params(filepath)
         
-        (nn_dict, pn_dict) = self._extract_sweep_params(filepath, sweep_type="NOISE")
+        if self._simulator.simulator == 'spectre':
+            (nn_dict, pn_dict) = self._extract_sweep_params(filepath, sweep_type="NOISE")
+        elif self._simulator.simulator == 'ngspice':
+            nn_dict = {}
+            pn_dict = {}
 
         return i, j, n_dict, p_dict, nn_dict, pn_dict
 
@@ -223,6 +234,7 @@ class Sweep:
                 'mn:cjd': np.array(sweep_array[:][:, params_names.index('cjd')]),
                 'mn:cjs': np.array(sweep_array[:][:, params_names.index('cjs')])
             }
+            #print(nmos['mn:ids'].shape)
             
             selected_data = ngspice_parser(pmos_path)
 
@@ -271,5 +283,5 @@ class Sweep:
                 'mp:cjd': np.array(sweep_array[:][:, params_names.index('cjd')]),
                 'mp:cjs': np.array(sweep_array[:][:, params_names.index('cjs')])
             }
-        
+            
         return (nmos, pmos)

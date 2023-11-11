@@ -21,8 +21,12 @@ class Simulator:
     def run(self, filename: str, **kwargs):
         infile = filename
         try:
-            cmd_args = [self.__simulator, filename] + [*self.__args]
-            cp = subprocess.run(cmd_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+            if self.simulator == 'spectre':
+                cmd_args = [self.__simulator, filename] + [*self.__args]
+                cp = subprocess.run(cmd_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+            elif self.simulator == 'ngspice':
+                cmd_args = [self.__simulator, '-b', filename]
+                cp = subprocess.run(cmd_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
         except subprocess.CalledProcessError as e:
             logging.info(f"Error executing process\n\n{e}")
             return
