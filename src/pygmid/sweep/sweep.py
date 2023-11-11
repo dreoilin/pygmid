@@ -23,7 +23,7 @@ SIMULATOR_ARGS = {
                 '-raw', 
                 './sweep/psf'],
 
-    'ngspice' : None
+    'ngspice' : ['-b']
 }
 
 class Sweep:
