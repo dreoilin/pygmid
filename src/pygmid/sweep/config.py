@@ -186,13 +186,13 @@ class Config:
                 f".lib {modelfile}",
                 f".include ./{paramfile}",
                 f'.control',
-                f'*---- NMOS
-                save all @n.xm1.nsg13_lv_nmos[ids] @n.xm1.nsg13_lv_nmos[vth]  @n.xm1.nsg13_lv_nmos[igd] @n.xm1.nsg13_lv_nmos[igs] @n.xm1.nsg13_lv_nmos[gm] @n.xm1.nsg13_lv_nmos[gm] @n.xm1.nsg13_lv_nmos[gmb] @n.xm1.nsg13_lv_nmos[cgg] @n.xm1.nsg13_lv_nmos[cgs] @n.xm1.nsg13_lv_nmos[cgd] @n.xm1.nsg13_lv_nmos[cgb] @n.xm1.nsg13_lv_nmos[cdd] @n.xm1.nsg13_lv_nmos[cdg] @n.xm1.nsg13_lv_nmos[css]  @n.xm1.nsg13_lv_nmos[csg]  @n.xm1.nsg13_lv_nmos[cjd]  @n.xm1.nsg13_lv_nmos[cjs]',
+                f'*---- NMOS',
+                f'save all @n.xm1.nsg13_lv_nmos[ids] @n.xm1.nsg13_lv_nmos[vth]  @n.xm1.nsg13_lv_nmos[igd] @n.xm1.nsg13_lv_nmos[igs] @n.xm1.nsg13_lv_nmos[gm] @n.xm1.nsg13_lv_nmos[gm] @n.xm1.nsg13_lv_nmos[gmb] @n.xm1.nsg13_lv_nmos[cgg] @n.xm1.nsg13_lv_nmos[cgs] @n.xm1.nsg13_lv_nmos[cgd] @n.xm1.nsg13_lv_nmos[cgb] @n.xm1.nsg13_lv_nmos[cdd] @n.xm1.nsg13_lv_nmos[cdg] @n.xm1.nsg13_lv_nmos[css]  @n.xm1.nsg13_lv_nmos[csg]  @n.xm1.nsg13_lv_nmos[cjd]  @n.xm1.nsg13_lv_nmos[cjs]',
                 f'dc Vgs_n 0 {VGS_max} {VGS_step} Vds_n 0 {VDS_max} {VDS_step}',
                 f'wrdata mn.csv @n.xm1.nsg13_lv_nmos[ids] @n.xm1.nsg13_lv_nmos[vth]  @n.xm1.nsg13_lv_nmos[igd] @n.xm1.nsg13_lv_nmos[igs] @n.xm1.nsg13_lv_nmos[gm] @n.xm1.nsg13_lv_nmos[gmb] @n.xm1.nsg13_lv_nmos[gds] @n.xm1.nsg13_lv_nmos[cgg] @n.xm1.nsg13_lv_nmos[cgs] @n.xm1.nsg13_lv_nmos[cgd] @n.xm1.nsg13_lv_nmos[cgb] @n.xm1.nsg13_lv_nmos[cdd] @n.xm1.nsg13_lv_nmos[cdg] @n.xm1.nsg13_lv_nmos[css]  @n.xm1.nsg13_lv_nmos[csg]  @n.xm1.nsg13_lv_nmos[cjd]  @n.xm1.nsg13_lv_nmos[cjs] ',
                 f'reset                                                       ',
-                f'*---- PMOS
-                save all @n.xm2.nsg13_lv_pmos[ids] @n.xm2.nsg13_lv_pmos[vth]  @n.xm2.nsg13_lv_pmos[igd] @n.xm2.nsg13_lv_pmos[igs] @n.xm2.nsg13_lv_pmos[gm] @n.xm2.nsg13_lv_pmos[gm] @n.xm2.nsg13_lv_pmos[gmb] @n.xm2.nsg13_lv_pmos[cgg] @n.xm2.nsg13_lv_pmos[cgs] @n.xm2.nsg13_lv_pmos[cgd] @n.xm2.nsg13_lv_pmos[cgb] @n.xm2.nsg13_lv_pmos[cdd] @n.xm2.nsg13_lv_pmos[cdg] @n.xm2.nsg13_lv_pmos[css]  @n.xm2.nsg13_lv_pmos[csg]  @n.xm2.nsg13_lv_pmos[cjd]  @n.xm2.nsg13_lv_pmos[cjs]',
+                f'*---- PMOS',
+                f'save all @n.xm2.nsg13_lv_pmos[ids] @n.xm2.nsg13_lv_pmos[vth]  @n.xm2.nsg13_lv_pmos[igd] @n.xm2.nsg13_lv_pmos[igs] @n.xm2.nsg13_lv_pmos[gm] @n.xm2.nsg13_lv_pmos[gm] @n.xm2.nsg13_lv_pmos[gmb] @n.xm2.nsg13_lv_pmos[cgg] @n.xm2.nsg13_lv_pmos[cgs] @n.xm2.nsg13_lv_pmos[cgd] @n.xm2.nsg13_lv_pmos[cgb] @n.xm2.nsg13_lv_pmos[cdd] @n.xm2.nsg13_lv_pmos[cdg] @n.xm2.nsg13_lv_pmos[css]  @n.xm2.nsg13_lv_pmos[csg]  @n.xm2.nsg13_lv_pmos[cjd]  @n.xm2.nsg13_lv_pmos[cjs]',
                 f'dc Vgs_p 0 {-VGS_max} {-VGS_step} Vds_p 0 {-VDS_max} {-VDS_step}',
                 f'wrdata mp.csv @n.xm2.nsg13_lv_pmos[ids] @n.xm2.nsg13_lv_pmos[vth]  @n.xm2.nsg13_lv_pmos[igd] @n.xm2.nsg13_lv_pmos[igs] @n.xm2.nsg13_lv_pmos[gm] @n.xm2.nsg13_lv_pmos[gmb] @n.xm2.nsg13_lv_pmos[gds] @n.xm2.nsg13_lv_pmos[cgg] @n.xm2.nsg13_lv_pmos[cgs] @n.xm2.nsg13_lv_pmos[cgd] @n.xm2.nsg13_lv_pmos[cgb] @n.xm2.nsg13_lv_pmos[cdd] @n.xm2.nsg13_lv_pmos[cdg] @n.xm2.nsg13_lv_pmos[css]  @n.xm2.nsg13_lv_pmos[csg]  @n.xm2.nsg13_lv_pmos[cjd]  @n.xm2.nsg13_lv_pmos[cjs] ',
                 f'.endc',
