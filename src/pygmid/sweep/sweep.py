@@ -193,7 +193,8 @@ class Sweep:
             params_names = ['ids', 'vth', 'igd', 'igs', 'gm',
                             'gmb', 'gds', 'cgg', 'cgs', 'cgd',
                             'cgb', 'cdd', 'cdg', 'css', 'csg', 'cjd', 'cjs']
-            pmos_signs = [-1, -1, -1, -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1]
+            # need to convert signs of parameters to match spectre convention
+            pmos_signs =    [-1,    -1,     -1,     -1,     1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1]
 
             nmos = {f"mn:{param}" : data.reshape((len(self._config['SWEEP']['VDS']), len(self._config['SWEEP']['VGS']))).T for param, data in zip(params_names,nmos_data)}
             pmos = {f"mp:{param}" : sign*data.reshape((len(self._config['SWEEP']['VDS']), len(self._config['SWEEP']['VGS']))).T for param, data, sign in zip(params_names,pmos_data,pmos_signs)}
