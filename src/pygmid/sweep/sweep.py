@@ -79,13 +79,9 @@ class Sweep:
             for n,p in zip(self._config['n'],self._config['p']):
                 params_n = n
                 values_n = n_dict[params_n[0]]
-                print(params_n)
-                print(values_n)
-                print(values_n.shape)
                 params_p = p
                 values_p = p_dict[params_p[0]]
                 for m, outvar in enumerate(self._config['outvars']):
-                    import IPython; IPython.embed()
                     nch[outvar][i,:,:,j] += np.squeeze(values_n*params_n[2][m])
                     pch[outvar][i,:,:,j] += np.squeeze(values_p*params_p[2][m])
             
@@ -141,7 +137,10 @@ class Sweep:
         try:
             shutil.rmtree("./sweep")
             os.remove("pysweep.scs")
-            os.remove("params.scs")
+            if self._simulator.simulator =='spectre':
+                os.remove("params.scs")
+            elif self._simulator.simulator == 'ngspice':
+                os.remove("params.lib")
         except OSError as e:
             print("Could not perform cleanup:\nFile - {e.filename}\nError - {e.strerror}")
 
@@ -187,101 +186,18 @@ class Sweep:
             nmos_path = os.path.join(sweep_output_directory, 'mn.csv')
             pmos_path = os.path.join(sweep_output_directory, 'mp.csv')
             
-            selected_data = ngspice_parser(nmos_path)
+            nmos_data = ngspice_parser(nmos_path)
+            pmos_data = ngspice_parser(pmos_path)
 
             #------- Params
             params_names = ['ids', 'vth', 'igd', 'igs', 'gm',
                             'gmb', 'gds', 'cgg', 'cgs', 'cgd',
                             'cgb', 'cdd', 'cdg', 'css', 'csg', 'cjd', 'cjs']
 
-            #------- Find vds list
-            vds_list = []
-            for i in range(int(len(selected_data)/2)):
-                vds_list.append(abs(selected_data[i][0]))   #abs() for pmos compatibility
-
-            #------- Find max and min vds
-            max_vds = max(vds_list)
-
-            sweeps = [] #vgs sweeps
-            local_sweep = []
-            for i in range(len(selected_data)):
-                if abs(selected_data[i][0]) == max_vds:     #abs() for pmos compatibility
-                    local_sweep.append(selected_data[i][1:])  #delete vds [1:0]
-                    sweeps.append(local_sweep)
-                    local_sweep = []
-                else:
-                    local_sweep.append(selected_data[i][1:])  #delete vds [1:0]
-
-            #------- To array
-            sweep_array = np.array(sweeps)
-
-            #------- To dict
-            nmos = {
-                'mn:ids': np.array(sweep_array[:][:, params_names.index('ids')]),
-                'mn:vth': np.array(sweep_array[:][:, params_names.index('vth')]),
-                'mn:igd': np.array(sweep_array[:][:, params_names.index('igd')]),
-                'mn:gm':  np.array(sweep_array[:][:, params_names.index('gm')]),
-                'mn:gmbs': np.array(sweep_array[:][:, params_names.index('gmb')]),
-                'mn:gds': np.array(sweep_array[:][:, params_names.index('gds')]),
-                'mn:cgg': np.array(sweep_array[:][:, params_names.index('cgg')]),
-                'mn:cgs': np.array(sweep_array[:][:, params_names.index('cgs')]),
-                'mn:cgd': np.array(sweep_array[:][:, params_names.index('cgd')]),
-                'mn:cgb': np.array(sweep_array[:][:, params_names.index('cgb')]),
-                'mn:cdd': np.array(sweep_array[:][:, params_names.index('cdd')]),
-                'mn:cdg': np.array(sweep_array[:][:, params_names.index('cdg')]),
-                'mn:css': np.array(sweep_array[:][:, params_names.index('css')]),
-                'mn:csg': np.array(sweep_array[:][:, params_names.index('csg')]),
-                'mn:cjd': np.array(sweep_array[:][:, params_names.index('cjd')]),
-                'mn:cjs': np.array(sweep_array[:][:, params_names.index('cjs')])
-            }
-            #print(nmos['mn:ids'].shape)
-            
-            selected_data = ngspice_parser(pmos_path)
-
-            #------- Params
-            params_names = ['ids', 'vth', 'igd', 'igs', 'gm',
-                            'gmb', 'gds', 'cgg', 'cgs', 'cgd',
-                            'cgb', 'cdd', 'cdg', 'css', 'csg', 'cjd', 'cjs']
-
-            #------- Find vds list
-            vds_list = []
-            for i in range(int(len(selected_data)/2)):
-                vds_list.append(abs(selected_data[i][0]))   #abs() for pmos compatibility
-
-            #------- Find max and min vds
-            max_vds = max(vds_list)
-
-            sweeps = [] #vgs sweeps
-            local_sweep = []
-            for i in range(len(selected_data)):
-                if abs(selected_data[i][0]) == max_vds:     #abs() for pmos compatibility
-                    local_sweep.append(selected_data[i][1:])  #delete vds [1:0]
-                    sweeps.append(local_sweep)
-                    local_sweep = []
-                else:
-                    local_sweep.append(selected_data[i][1:])  #delete vds [1:0]
-
-            #------- To array
-            sweep_array = np.array(sweeps)
-
-            #------- To dict
-            pmos = {
-                'mp:ids': np.array(sweep_array[:][:, params_names.index('ids')]),
-                'mp:vth': np.array(sweep_array[:][:, params_names.index('vth')]),
-                'mp:igd': np.array(sweep_array[:][:, params_names.index('igd')]),
-                'mp:gm':  np.array(sweep_array[:][:, params_names.index('gm')]),
-                'mp:gmbs': np.array(sweep_array[:][:, params_names.index('gmb')]),
-                'mp:gds': np.array(sweep_array[:][:, params_names.index('gds')]),
-                'mp:cgg': np.array(sweep_array[:][:, params_names.index('cgg')]),
-                'mp:cgs': np.array(sweep_array[:][:, params_names.index('cgs')]),
-                'mp:cgd': np.array(sweep_array[:][:, params_names.index('cgd')]),
-                'mp:cgb': np.array(sweep_array[:][:, params_names.index('cgb')]),
-                'mp:cdd': np.array(sweep_array[:][:, params_names.index('cdd')]),
-                'mp:cdg': np.array(sweep_array[:][:, params_names.index('cdg')]),
-                'mp:css': np.array(sweep_array[:][:, params_names.index('css')]),
-                'mp:csg': np.array(sweep_array[:][:, params_names.index('csg')]),
-                'mp:cjd': np.array(sweep_array[:][:, params_names.index('cjd')]),
-                'mp:cjs': np.array(sweep_array[:][:, params_names.index('cjs')])
-            }
-            
+            nmos = {f"mn:{param}" : data.reshape((len(self._config['SWEEP']['VDS']), len(self._config['SWEEP']['VGS']))).T for param, data in zip(params_names,nmos_data)}
+            pmos = {f"mp:{param}" : data.reshape((len(self._config['SWEEP']['VDS']), len(self._config['SWEEP']['VGS']))).T for param, data in zip(params_names,pmos_data)}
+            # compatibility
+            nmos['mn:gmbs'] = nmos.pop('mn:gmb')
+            pmos['mp:gmbs'] = pmos.pop('mp:gmb')
+        
         return (nmos, pmos)

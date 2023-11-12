@@ -1,12 +1,11 @@
+import csv
+import numpy as np
 
 def ngspice_parser(filename):
     
-    selected_data = []
-    with open(filename, 'r') as file:
-        data = file.read().split()
-        LENGTH = 34
-        for i in range(0, len(data), LENGTH):  #34 because 34 columns of data
-            section = [float(value) for value in data[i:i+LENGTH]]
-            selected_data.append(list( section[j] for j in [0,1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33]))
-
-    return selected_data
+    with open(filename,'r') as csvfile:
+        data = list(csv.reader(csvfile))
+        data = np.array([[float(num) for num in line[0].split()] for line in data])
+        data = np.delete(data, list(range(0, data.shape[1], 2)), axis=1).T
+        
+    return list(data)
