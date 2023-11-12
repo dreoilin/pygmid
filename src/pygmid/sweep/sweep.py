@@ -130,7 +130,7 @@ class Sweep:
         elif self._simulator.simulator == 'ngspice':
             ext = 'lib'
             with open(f'params.{ext}', 'w') as outfile:
-                outfile.write(f".param length={length}\n")
+                outfile.write(f".param length={length}e-6\n")
                 outfile.write(f".param sb={sb}")
     
     def _cleanup(self):
