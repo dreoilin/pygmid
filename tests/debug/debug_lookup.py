@@ -11,6 +11,7 @@ mpl.rcParams['axes.spines.top'] = False
 mpl.rcParams.update({"axes.grid" : True})
 
 #%%
+# Specify appropriate path...
 NCH = lk('tsmcN65_n25.pkl')  # load MATLAB data into pygmid lookup object
 
 VDSs = NCH['VDS']       # lookup object has pseudo-array access to data
@@ -99,3 +100,5 @@ gm_ID = NCH.look_up('GM_ID', VDS=np.arange(0.025, 1.2+0.025, 0.025), VSB=0.0, L=
 print(gm_ID)
 
 # %%
+gmID = NCH.look_up('GM_ID',vgs=VGSs,vds=VDsat,L=L)
+JDsat = NCH.look_up('ID_W',GM_ID=np.linspace(2,25))

@@ -238,8 +238,6 @@ class Lookup:
         xi_mesh = np.array(np.meshgrid(pars['L'], pars['VGS'], pars['VDS'], pars['VSB'], indexing='ij'))
         xi = np.rollaxis(xi_mesh, 0, 5)
         xi = xi.reshape(int(xi_mesh.size/4), 4)
-        #ipnkwargs = {'bounds_error' : False,
-        #            'fill_value'   : None}
 
         x = interpn(points, xdata, xi, **ipkwargs).reshape(len(np.atleast_1d(pars['L'])), \
             len(np.atleast_1d(pars['VGS'])), len(np.atleast_1d(pars['VDS'])),\
@@ -282,7 +280,7 @@ class Lookup:
                     if crossings > 1:
                         print('Crossing warning')
                         return []
-                    output[i, j] = interp1(x_right, y_right, **ipkwargs)(xdesired[j])
+                    output[i, j] = interp1(x[:,i], y[:, i], **ipkwargs)(xdesired[j])
 
         output = np.squeeze(output)
 
