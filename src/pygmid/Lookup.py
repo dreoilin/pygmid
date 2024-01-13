@@ -5,7 +5,7 @@ import scipy.io
 from scipy.interpolate import interpn
 import pickle
 
-from .constants import eps
+from .constants import *
 from .numerical import interp1
 
 class Lookup:
@@ -378,3 +378,38 @@ class Lookup:
             output = output[:]
         
         return np.squeeze(output)
+    
+    def gamma(self, **kwargs):
+        """
+        Companion gamma function. Computes gamma from:
+
+            STH/gm * 1/(4kT)
+        
+        where STH is thermal noise psd at 1 Hz
+            
+        Args:
+            **kwargs: lookup parameters, GM_ID, length, VDS etc...
+        Output:
+            output: interpolated data specified by outkeys. Squeezed to remove extra
+                    dimensions
+        """
+
+        # should provide a GMID, VDS and L
+        return self.look_up('STH_GM', **kwargs)/(4*kB*self['TEMP'].item())
+    
+    def fco(self, **kwargs):
+        """
+        Companion flicker corner function. Computes flicker corner from:
+
+            SFL/STH
+        
+        where STH is thermal noise psd at 1 Hz
+        and SFL is flicker noise psd at 1 Hz
+            
+        Args:
+            **kwargs: lookup parameters, GM_ID, length, VDS etc...
+        Output:
+            output: interpolated data specified by outkeys. Squeezed to remove extra
+                    dimensions
+        """
+        return self.look_up('SFL_STH', **kwargs)
