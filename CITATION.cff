@@ -1,0 +1,23 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: PyGMID
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Cian
+    family-names: O'Donnell
+    email: cian.odonnell@mcci.ie
+    name-particle: Cian
+    affiliation: MCCI
+    orcid: 'https://orcid.org/0000-0001-9186-4901'
+  - given-names: Daniel
+    family-names: O'Hare
+    email: daniel.ohare@mcci.ie
+    affiliation: MCCI
+    orcid: 'https://orcid.org/0000-0002-2919-1301'
+  - given-names: Tiarnach
+    family-names: Reidy
