@@ -32,8 +32,7 @@ of Stanford University. The package also offers some scripts from the Paul Jespe
 
 If you find this package useful for your research, please consider citing it.
 
-For the gm/ID starter kit, written for MATLAB, please refer to the 'Links'
-section at Prof. Murmann's website: https://web.stanford.edu/~murmann.
+The original MATLAB gm/ID starter kit can be found [here](https://github.com/bmurmann/Book-on-gm-ID-design/tree/main/starter_kit)
 
 ## Installation
 
