@@ -258,7 +258,7 @@ class Lookup:
         output = np.zeros((dim[1], len(xdesired)))
         ipkwargs = {
             'kind' : pars['METHOD'],
-            'fill_value' : np.NaN
+            'fill_value' : np.nan
         }
         
         for i in range(0, dim[1]):
@@ -359,7 +359,7 @@ class Lookup:
         s = ratio.shape
         
         output = np.empty((s[1], len(np.atleast_1d(ratio_data))))
-        output[:] = np.NaN
+        output[:] = np.nan
          
         for j in range(s[1]):
             ratio_range = ratio[:,j]
