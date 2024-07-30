@@ -132,6 +132,7 @@ The generic PDK data is hosted <a href="https://github.com/bmurmann/Book-on-gm-I
 
 - Cian O'Donnell : cian.odonnell@mcci.ie
 - Tiarnach Ó Riada : tiarnach.oriada@tyndall.ie
+- Neil Stuart
 - Danylo Galach
 
 ## Contributors
