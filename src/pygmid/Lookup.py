@@ -85,7 +85,7 @@ class Lookup:
         return None
 
     def __contains__(self, key):
-        return key in self.__DATA.keys()
+        return key.upper() in self.__DATA.keys()
 
     def __getitem__(self, key):
         """
@@ -96,7 +96,7 @@ class Lookup:
         if key not in self:
             raise ValueError(f"Lookup table does not contain this data")
 
-        return np.copy(self.__DATA[key])
+        return np.copy(self.__DATA[key.upper()])
 
     def _modeset(self, outkey, varkey):
         """
