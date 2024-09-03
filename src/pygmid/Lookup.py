@@ -4,6 +4,7 @@ import numpy as np
 import scipy.io
 from scipy.interpolate import interpn
 import pickle
+import prettytable
 
 from .constants import *
 from .numerical import interp1
@@ -413,3 +414,23 @@ class Lookup:
                     dimensions
         """
         return self.look_up('SFL_STH', **kwargs)
+
+    def __str__(self):
+
+        tab = prettytable.PrettyTable()
+        tab.field_names = ['Variable', 'Size', 'Min', 'Max']
+
+        for k, v in self.__DATA.items():
+
+            is_numeric = np.issubdtype(v.dtype, np.number)
+
+            if is_numeric:
+              size = str(v.shape).replace('(', '').replace(')', '').\
+                                  replace(', ', 'x').replace(',', '')
+
+            tab.add_row([ k
+                        , size             if size       else '1'
+                        , f'{v.min():.2e}' if is_numeric else 'N/A'
+                        , f'{v.max():.2e}' if is_numeric else 'N/A'])
+
+        return tab.get_string()
