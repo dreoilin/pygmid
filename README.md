@@ -1,10 +1,10 @@
-![Tests](https://github.com/madrasalach/pygmid/actions/workflows/run-tests.yml/badge.svg?branch=main)
+![Tests](https://github.com/dreoilin/pygmid/actions/workflows/run-tests.yml/badge.svg?branch=main)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/pygmid)
 [![DOI](https://zenodo.org/badge/510693980.svg)](https://zenodo.org/badge/latestdoi/510693980)
 
 <p align="center">
   <a>
-    <img src="https://github.com/madrasalach/pygmid/blob/main/docs/img/icon.png?raw=true" width="80">
+    <img src="https://github.com/dreoilin/pygmid/blob/main/docs/img/icon.png?raw=true" width="80">
   </a>
 
   <h3 align="center">pygmid</h3>
@@ -12,9 +12,9 @@
   <p align="center">
     A python3 implementation of the gm/ID starter kit
     <br>
-    <a href="https://www.github.com/madrasalach/pygmid/issues/new?template=bug.md">Report bug</a>
+    <a href="https://www.github.com/dreoilin/pygmid/issues/new?template=bug.md">Report bug</a>
     ·
-    <a href="https://www.github.com/madrasalach/pygmid/issues/new?template=feature.md&labels=feature">Request feature</a>
+    <a href="https://www.github.com/dreoilin/pygmid/issues/new?template=feature.md&labels=feature">Request feature</a>
   </p>
 </p>
 
@@ -108,17 +108,17 @@ Usage of lookup scripts are given in `debug_lookup.py` and `debug_lookupVGS.py`.
 
 Sample outputs for the 180nm generic pdk used in the Murmann starter pack are given below:
 
-![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/IDvVDS.png?raw=true)
+![image](https://github.com/dreoilin/pygmid/blob/main/docs/img/IDvVDS.png?raw=true)
 
-![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/vtvsL.png?raw=true)
+![image](https://github.com/dreoilin/pygmid/blob/main/docs/img/vtvsL.png?raw=true)
 
-![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/gm_gds.png?raw=true)
+![image](https://github.com/dreoilin/pygmid/blob/main/docs/img/gm_gds.png?raw=true)
 
-![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/ft.png?raw=true)
+![image](https://github.com/dreoilin/pygmid/blob/main/docs/img/ft.png?raw=true)
 
-![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/idwVDS.png?raw=true)
+![image](https://github.com/dreoilin/pygmid/blob/main/docs/img/idwVDS.png?raw=true)
 
-![image](https://github.com/madrasalach/pygmid/blob/main/docs/img/IDWvsgmID.png?raw=true)
+![image](https://github.com/dreoilin/pygmid/blob/main/docs/img/IDWvsgmID.png?raw=true)
 
 The generic PDK data is hosted <a href="https://github.com/bmurmann/Book-on-gm-ID-design">here</a>.
 
