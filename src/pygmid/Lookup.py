@@ -435,9 +435,11 @@ class Lookup:
 
             is_numeric = np.issubdtype(v.dtype, np.number)
 
-            if is_numeric:
-              size = str(v.shape).replace('(', '').replace(')', '').\
-                                  replace(', ', 'x').replace(',', '')
+            size = None
+
+            if is_numeric :
+                size = str(v.shape).replace('(', '').replace(')', '').\
+                                    replace(', ', 'x').replace(',', '')
 
             tab.add_row([ k
                         , size             if size       else '1'
