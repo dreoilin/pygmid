@@ -5,6 +5,7 @@ import scipy.io
 from scipy.interpolate import interpn
 import pickle
 import prettytable
+import h5py
 
 from .constants import *
 from .numerical import interp1
@@ -55,17 +56,20 @@ class Lookup:
         """
         Function to load data from file
 
-        Loads array data from file. Currently supports .mat files only.
-        .mat is parsed to convert MATLAB cell data into a dictionary of
-        arrays. Data is loaded from value with first non-header key. 
-        Python interprets MATLAB cell structures as 1-D nests. Nested 
-        data is accessed and deep copied to member DATA variable
+        Loads array data from file. Currently supports 
+        - .mat files
+            .mat is parsed to convert MATLAB cell data into a dictionary of
+            arrays. Data is loaded from value with first non-header key. 
+            Python interprets MATLAB cell structures as 1-D nests. Nested 
+            data is accessed and deep copied to member DATA variable.
+        - .pkl files
+        - .hdf5 files
 
         Args:
             filename
 
         Returns:
-            First MATLAB variable encountered in file as data
+            LUT data structure when file type supported, None otherwise
         """
         if filename.endswith('.mat'):
             # parse .mat file into dict object
@@ -75,12 +79,19 @@ class Lookup:
                 if not( k.startswith('__') and k.endswith('__') ):
                     mat = mat[k]
                     data = {k.upper():copy.deepcopy(np.squeeze(mat[k][0][0])) for k in mat.dtype.names}
-                    return data   
+                    return data
         
         elif filename.endswith('.pkl'):
             with open(filename, 'rb') as f:
                 data = pickle.load(f)
                 return data
+
+        elif filename.endswith('.hdf5'):
+            with h5py.File(filename, 'r') as f:
+                data = {k.upper():copy.deepcopy(np.squeeze(f[k][()])) for k in f.keys()}
+                return data
+        else:
+            print('File not supported (only .mat, .pkl and .hdf5)')
 
         # !TODO add functionality to load other data structures
         return None
