@@ -196,7 +196,7 @@ class Lookup:
 
         try:
             mode = self._modeset(outkeys, varkeys)
-        except:
+        except ValueError:
             return []
         # appropriate lookup function is called with modefuncmap dict
         y = self.__modefuncmap.get(mode) (outkeys, varkeys, vararg, pars, **ipkwargs)
